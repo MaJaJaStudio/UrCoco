@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/groupNormal"
+        android:checkableBehavior="single">
+        <item android:id="@+id/nav_cost" android:icon="@mipmap/ic_home_white_24dp"
+            android:title="首頁" />
+        <item android:id="@+id/nav_gallery" android:icon="@mipmap/ic_timeline_white_24dp"
+            android:title="分析" />
+        <item android:id="@+id/nav_setting" android:icon="@mipmap/ic_settings_white_24dp"
+            android:title="設定" />
+    </group>
+    <group
+        android:id="@+id/groupAccount"
+        android:visible="false"
+        android:checkableBehavior="single">
+        <item android:id="@+id/nav_add_account" android:icon="@mipmap/ic_add_white_24dp"
+            android:title="新增帳戶" />
+        <item android:id="@+id/nav_setting_account" android:icon="@mipmap/ic_settings_white_24dp"
+            android:title="管理帳戶" />
+    </group>
+
+</menu>

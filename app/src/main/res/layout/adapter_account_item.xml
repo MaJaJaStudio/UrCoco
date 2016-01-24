@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/infoLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_background_selector"
+    android:clickable="true"
+    android:padding="10dp">
+
+    <com.kuo.urcoco.common.CircleTextView
+        android:id="@+id/iconImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/iconImage"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/account"
+            android:textSize="@dimen/activity_sub_text_size"
+            android:textColor="@color/Grey_800"/>
+
+        <TextView
+            android:id="@+id/accountText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/activity_body_text_size"
+            android:textColor="@color/Grey_900"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/budget"
+            android:textSize="@dimen/activity_sub_text_size"
+            android:textColor="@color/Grey_800"/>
+
+        <TextView
+            android:id="@+id/budgetText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/activity_body_text_size"
+            android:textColor="@color/Grey_900"/>
+
+    </LinearLayout>
+</RelativeLayout>

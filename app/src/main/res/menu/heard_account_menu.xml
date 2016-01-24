@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/groupAccount"
+        android:visible="false"
+        android:checkableBehavior="single">
+        <item android:id="@+id/nav_account_other" android:icon="@android:drawable/ic_menu_day"
+            android:title="帳戶" />
+    </group>
+
+</menu>

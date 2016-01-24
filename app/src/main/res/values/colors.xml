@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00BCD4</color>
+    <color name="colorPrimaryDark">#0097A7</color>
+
+    <color name="settingColorPrimary">#607D8B</color>
+    <color name="settingColorPrimaryDark">#455A64</color>
+
+    <color name="Indigo_300">#7986CB</color>
+    <color name="Indigo_100">#C5CAE9</color>
+    <color name="colorAccent">#0097A7</color>
+    <color name="colorPrimaryAphal">#797986cb</color>
+
+    <color name="DeepOrange_400">#FF7043</color>
+    <color name="DeepOrange_200">#FFAB91</color>
+
+    <color name="Grey_50">#FAFAFA</color>
+    <color name="Grey_900">#212121</color>
+    <color name="Grey_800">#424242</color>
+    <color name="Grey_300">#E0E0E0</color>
+    <color name="Grey_400">#BDBDBD</color>
+    <color name="Grey_600">#757575</color>
+
+    <!--Red Color-->
+    <color name="Red_400">#EF5350</color>
+    <color name="Red_500">#F44336</color>
+    <color name="Red_700">#D32F2F</color>
+
+    <!--Pink Color-->
+    <color name="Pink_500">#E91E63</color>
+    <color name="Pink_700">#C2185B</color>
+
+    <!--Purple Color-->
+    <color name="Purple_500">#9C27B0</color>
+    <color name="Purple_700">#7B1FA2</color>
+
+    <!--Deep Purple Color-->
+    <color name="DeepPurple_500">#673AB7</color>
+    <color name="DeepPurple_700">#512DA8</color>
+
+    <!--Indigo Color-->
+    <color name="Indigo_500">#3F51B5</color>
+    <color name="Indigo_700">#303F9F</color>
+
+    <!--Blue Color-->
+    <color name="Blue_500">#2196F3</color>
+    <color name="Blue_700">#1976D2</color>
+
+    <!--LightBlue Color-->
+    <color name="LightBlue_500">#03A9F4</color>
+    <color name="LightBlue_700">#0288D1</color>
+
+    <!--Teal Color-->
+    <color name="Teal_500">#009688</color>
+    <color name="Teal_700">#00796B</color>
+
+    <!--Green Color-->
+    <color name="Green_500">#4CAF50</color>
+    <color name="Green_700">#388E3C</color>
+
+    <!--LightGreen Color-->
+    <color name="LightGreen_500">#8BC34A</color>
+    <color name="LightGreen_700">#689F38</color>
+
+    <!--Lime Color-->
+    <color name="Lime_500">#CDDC39</color>
+    <color name="Lime_700">#AFB42B</color>
+
+    <!--Yellow Color-->
+    <color name="Yellow_500">#FFEB3B</color>
+    <color name="Yellow_700">#FBC02D</color>
+
+    <!--Amber Color-->
+    <color name="Amber_500">#FFC107</color>
+    <color name="Amber_700">#FFA000</color>
+
+    <!--Orange Color-->
+    <color name="Orange_500">#FF9800</color>
+    <color name="Orange_700">#F57C00</color>
+
+    <!--DeepOrange Color-->
+    <color name="DeepOrange_500">#FF5722</color>
+    <color name="DeepOrange_700">#E64A19</color>
+
+    <!--Brown Color-->
+    <color name="Brown_500">#795548</color>
+    <color name="Brown_700">#5D4037</color>
+
+    <!--Grey Color-->
+    <color name="Grey_500">#9E9E9E</color>
+    <color name="Grey_700">#616161</color>
+
+    <!--BlueGrey Color-->
+    <color name="BlueGrey_500">#607D8B</color>
+    <color name="BlueGrey_700">#607D8B</color>
+
+    <!--Other Color-->
+    <color name="Cyan_700">#0097A7</color>
+    <color name="Cyan_500">#455A64</color>
+
+
+
+</resources>

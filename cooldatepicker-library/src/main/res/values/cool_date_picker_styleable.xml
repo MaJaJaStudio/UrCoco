@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CoolDatePicker">
+        <attr name="calendar_backgroundColor" format="color"/>
+        <attr name="calendar_textColor" format="color"/>
+        <attr name="calendar_textMonthColor" format="color"/>
+        <attr name="calendar_textFoucsColor" format="color"/>
+        <attr name="calendar_circleFoucsColor" format="color"/>
+
+        <attr name="title_textYearColor" format="color"/>
+        <attr name="title_textMonthColor" format="color"/>
+        <attr name="title_textDayColor" format="color"/>
+        <attr name="title_textDayOfWeekColor" format="color"/>
+
+    </declare-styleable>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/Grey_50">
+
+    <DatePicker
+        android:id="@+id/datePicker"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:calendarViewShown="false"/>
+
+    <LinearLayout
+        android:id="@+id/ctrlLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="right"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <Button
+            style="?attr/buttonBarStyle"
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/button_background_selector"
+            android:text="@string/dialog_cancel"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/button_text_medium"/>
+
+        <Button
+            style="?attr/buttonBarStyle"
+            android:id="@+id/enterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/button_background_selector"
+            android:text="@string/dialog_enter"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/button_text_medium"/>
+    </LinearLayout>
+
+</LinearLayout>

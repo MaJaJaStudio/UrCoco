@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/accountLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="8dp">
+
+    <com.kuo.urcoco.common.CircleTextView
+        android:id="@+id/nav_account_image"
+        android:layout_width="42dp"
+        android:layout_height="42dp" />
+
+    <TextView
+        android:id="@+id/nav_account_text"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:textSize="@dimen/activity_sub_text_size"
+        android:textColor="@color/Grey_900"/>
+
+</LinearLayout>

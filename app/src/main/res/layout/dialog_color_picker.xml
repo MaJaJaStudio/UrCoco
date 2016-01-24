@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.kuo.urcoco.common.WrapContentHeightGridView
+        android:id="@+id/grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ctrlLayout"
+        android:numColumns="4"
+        android:choiceMode="singleChoice"/>
+
+    <LinearLayout
+        android:id="@+id/ctrlLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:orientation="horizontal">
+
+        <Button
+            style="?attr/buttonBarStyle"
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/button_background_selector"
+            android:text="@string/dialog_cancel"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/button_text_medium"/>
+
+        <Button
+            style="?attr/buttonBarStyle"
+            android:id="@+id/enterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/button_background_selector"
+            android:text="@string/dialog_enter"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/button_text_medium"/>
+    </LinearLayout>
+
+</RelativeLayout>

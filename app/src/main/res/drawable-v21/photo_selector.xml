@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/Grey_400">
+    <item
+        android:drawable="@mipmap/ic_insert_photo_black_24dp"
+        android:top="8dp"
+        android:bottom="8dp"
+        android:right="8dp"
+        android:left="8dp"/>
+</ripple>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/infoLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_background_selector"
+    android:clickable="true"
+    android:padding="8dp">
+
+    <com.kuo.urcoco.common.CircleTextView
+        android:id="@+id/iconImage"
+        android:layout_width="@dimen/image_normal_size"
+        android:layout_height="@dimen/image_normal_size"
+        android:contentDescription="@string/contentDescription"/>
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/iconImage"
+        android:layout_toStartOf="@+id/costText"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:hint="@string/app_name"
+        android:textSize="@dimen/activity_sub_text_size"
+        android:textColor="@color/Grey_800"/>
+
+    <TextView
+        android:id="@+id/costText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="@dimen/activity_sub_text_size"
+        android:textColor="@color/Grey_800"/>
+
+</RelativeLayout>
+
