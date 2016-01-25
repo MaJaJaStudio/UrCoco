@@ -24,7 +24,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
+/*
  * Created by Kuo on 2015/12/16.
  */
 public class AccountActivity extends AppCompatActivity implements FindAccountView {

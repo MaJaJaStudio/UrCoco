@@ -144,7 +144,7 @@ public class SettingActivity extends AppCompatActivity {
                         Intent shareIntent;
                         shareIntent = new Intent(Intent.ACTION_SEND);
                         shareIntent.setType("text/*");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/apps/testing/com.kuo.moneycat");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.kuo.urcoco&hl=zh-TW");
                         startActivity(shareIntent);
                         break;
                     case 7:
@@ -162,7 +162,7 @@ public class SettingActivity extends AppCompatActivity {
 
         ArrayList<SettingItem> settingItems = new ArrayList<>();
 
-        String[] strings = {"一般設定", "提醒", "匯出", "支援", "協助", "分享"};
+        String[] strings = {"一般設定", "提醒", "匯出資料", "支援", "協助", "分享"};
         int[] ints = {1, R.mipmap.ic_alarm_black_36dp, R.mipmap.ic_save_black_36dp, 1, R.mipmap.ic_mail_outline_black_36dp, R.mipmap.ic_share_black_36dp, 1, R.mipmap.ic_person_outline_black_36dp};
 
         for(int i = 0 ; i < strings.length ; i++) {
