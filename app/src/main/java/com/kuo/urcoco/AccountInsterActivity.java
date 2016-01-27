@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kuo.urcoco.common.adapter.ColorAdapter;
 import com.kuo.urcoco.common.dialog.EditDialog;
@@ -150,8 +149,6 @@ public class AccountInsterActivity extends AppCompatActivity {
 
                     onBackPressed();
 
-                } catch (NumberFormatException n) {
-                    showDialog("請確認是否正確填寫");
                 } catch (Exception e) {
                     if (e.getMessage().equals("repeat")) {
                         showDialog("帳號重複");
@@ -159,8 +156,6 @@ public class AccountInsterActivity extends AppCompatActivity {
                         showDialog("請確認資料是否填寫完畢");
                     }
                 }
-
-
             }
         });
     }
@@ -273,7 +268,7 @@ public class AccountInsterActivity extends AppCompatActivity {
 
         if (mAccountName.equals("") || mBudget == 0) {
             throw new Exception();
-        } else if (!mAccountName.equals("")) {
+        } else if (!mAccountName.equals("") && mBudget != 0) {
             if(sqLiteManager.getSresultByName(mAccountName)) {
                 throw  new Exception("repeat");
             } else {
