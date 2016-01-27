@@ -1,2 +1,6 @@
-# UrCoco
-UrCoco on Android
+# UrCoco v1.2
+
+已修正：
+
+1. 當帳戶空白時的錯誤
+2. 無法使用數字命名
