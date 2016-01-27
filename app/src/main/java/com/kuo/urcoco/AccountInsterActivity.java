@@ -275,8 +275,8 @@ public class AccountInsterActivity extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 String mDate = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH);
 
-                sqLiteManager.insertAccountData(mAccountName, mAccountName + "_Money", mColorPrimary, mBudget, mDate, mColorPrimaryDark);
-                sqLiteManager.onCreateMoneyTable(mAccountName + "_Money");
+                sqLiteManager.insertAccountData(mAccountName, "Money_" + mAccountName, mColorPrimary, mBudget, mDate, mColorPrimaryDark);
+                sqLiteManager.onCreateMoneyTable("Money_" + mAccountName);
 
                 SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
