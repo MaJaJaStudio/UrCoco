@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -150,8 +151,9 @@ public class AccountInsterActivity extends AppCompatActivity {
                     onBackPressed();
 
                 } catch (Exception e) {
-                    if (e.getMessage().equals("repeat")) {
-                        showDialog("帳號重複");
+                    if (e.getMessage() != null) {
+                        if(e.getMessage().equals("repeat"))
+                            showDialog("帳號重複");
                     } else {
                         showDialog("請確認資料是否填寫完畢");
                     }
@@ -265,6 +267,8 @@ public class AccountInsterActivity extends AppCompatActivity {
 
         SQLiteManager sqLiteManager = new SQLiteManager(this);
         sqLiteManager.onOpen(sqLiteManager.getWritableDatabase());
+
+        Log.d("Account", mAccountName);
 
         if (mAccountName.equals("") || mBudget == 0) {
             throw new Exception();
