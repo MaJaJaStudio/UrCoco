@@ -47,20 +47,12 @@ public class InsterChoiceDialog extends DialogFragment implements Button.OnClick
         switch (v.getId()) {
             case R.id.expenseButton:
                 intent.setClass(getActivity(), MoneyInsterActivity.class);
-<<<<<<< HEAD
-                intent.putExtra("INSTER_TYPE", "EXPENSE");
-=======
                 intent.putExtra("INSTER_TYPE", "expense");
->>>>>>> d591d20
                 getActivity().startActivity(intent);
                 break;
             case R.id.icomeButton:
                 intent.setClass(getActivity(), MoneyInsterActivity.class);
-<<<<<<< HEAD
-                intent.putExtra("INSTER_TYPE", "INCOME");
-=======
                 intent.putExtra("INSTER_TYPE", "income");
->>>>>>> d591d20
                 getActivity().startActivity(intent);
                 break;
         }
