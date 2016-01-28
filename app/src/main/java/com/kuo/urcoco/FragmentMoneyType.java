@@ -73,7 +73,6 @@ public class FragmentMoneyType extends Fragment implements FindMoneyTypeView {
 
                 final MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
 
-
                 int colorFrom = color;
                 int colorTo = typeItem.getTypeColor();
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);

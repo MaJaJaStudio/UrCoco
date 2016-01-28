@@ -43,6 +43,7 @@
                     android:id="@+id/type_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
                     android:gravity="center"
                     android:hint="Urco"/>
             </LinearLayout>
@@ -64,7 +65,7 @@
                     android:padding="5dp"
                     android:gravity="right"
                     android:hint="0"
-                    android:textColor="@color/Grey_800"
+                    android:textColor="#FFFFFF"
                     android:textSize="35sp"/>
 
                 <TextView
