@@ -39,11 +39,13 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
 
     private Bitmap bitmap;
 
-    public static final FragmentMoneyInster newIntance(int INSTER_TYPE) {
+    public static final FragmentMoneyInster newIntance(int INSTER_TYPE, String contentText, String date) {
         FragmentMoneyInster fragmentMoneyInster = new FragmentMoneyInster();
 
         Bundle bundle = new Bundle();
         bundle.putInt("INSTER_TYPE", INSTER_TYPE);
+        bundle.putString("CONTENT_TEXT", contentText);
+        bundle.putString("DATE", date);
         fragmentMoneyInster.setArguments(bundle);
 
         return fragmentMoneyInster;
@@ -95,6 +97,8 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
 
     private void initViewData() {
 
+        MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
+
         if(getArguments().getInt("INSTER_TYPE", INSTER_TYPE) == INSTER_INPUT) {
 
             Calendar calendar = Calendar.getInstance();
@@ -103,10 +107,12 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
             String month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
             String day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
 
-            MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
             moneyInsterActivity.moneyItem.setDate(calendar.get(Calendar.YEAR) + "-" + month + "-" + day);
 
             dateText.setText(calendar.get(Calendar.YEAR) + "-" + month + "-" + day);
+        } else if(getArguments().getInt("INSTER_TYPE", INSTER_TYPE) == INSTER_UPDATE) {
+            dateText.setText(getArguments().getString("DATE"));
+            contentEdit.setText(getArguments().getString("CONTENT_TEXT"));
         }
 
     }
@@ -124,6 +130,10 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
         }
 
         return bitmap;
+    }
+
+    public String getContentText() {
+        return contentEdit.getText().toString();
     }
 
     @Override

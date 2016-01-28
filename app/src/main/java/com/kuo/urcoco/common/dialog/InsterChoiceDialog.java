@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
+import com.kuo.urcoco.FragmentMoneyInster;
 import com.kuo.urcoco.MoneyInsterActivity;
 import com.kuo.urcoco.R;
 
@@ -47,14 +48,18 @@ public class InsterChoiceDialog extends DialogFragment implements Button.OnClick
         switch (v.getId()) {
             case R.id.expenseButton:
                 intent.setClass(getActivity(), MoneyInsterActivity.class);
-                intent.putExtra("INSTER_TYPE", "expense");
+                intent.putExtra("MONEY_TYPE", "expense");
+                intent.putExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_INPUT);
                 getActivity().startActivity(intent);
                 break;
             case R.id.icomeButton:
                 intent.setClass(getActivity(), MoneyInsterActivity.class);
-                intent.putExtra("INSTER_TYPE", "income");
+                intent.putExtra("MONEY_TYPE", "income");
+                intent.putExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_INPUT);
                 getActivity().startActivity(intent);
                 break;
         }
+
+        dismiss();
     }
 }

@@ -1,5 +1,10 @@
 package com.kuo.urcoco;
 
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -8,8 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -19,6 +27,7 @@ import android.widget.Toast;
 
 import com.kuo.urcoco.common.NonScrollingViewPager;
 import com.kuo.urcoco.common.adapter.ViewPagerAdapter;
+import com.kuo.urcoco.common.item.CurrentAccountData;
 import com.kuo.urcoco.common.item.MoneyItem;
 
 import java.util.ArrayList;
@@ -34,13 +43,10 @@ public class MoneyInsterActivity extends AppCompatActivity {
     public Toolbar toolbar;
     public ImageView type_icon;
     public EditText money_edit;
-    public TextView date_text, type_name;
+    public TextView type_name;
     public LinearLayout titleLayout;
-    private ImageButton type_button;
 
     public MoneyItem moneyItem = new MoneyItem();
-
-    private boolean inster_lock = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +55,38 @@ public class MoneyInsterActivity extends AppCompatActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        moneyItem.setMONEY_TYPE("expense");
-
         initViews();
         initViewPager();
-        //initDateText();
         initEditTexts();
         initInsterButton();
-        //initUpdateMode();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+
+            NonScrollingViewPager viewPager = (NonScrollingViewPager) findViewById(R.id.viewPager);
+
+            if(viewPager.getCurrentItem() == 0) {
+                finish();
+                overridePendingTransition(0, R.anim.scale_bottom_right);
+            } else if(viewPager.getCurrentItem() == 1)  {
+                viewPager.setCurrentItem(0);
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void initViews() {
@@ -71,20 +100,6 @@ public class MoneyInsterActivity extends AppCompatActivity {
         type_icon = (ImageView) findViewById(R.id.type_icon);
     }
 
-    private void initViewPager() {
-        NonScrollingViewPager viewPager = (NonScrollingViewPager) findViewById(R.id.viewPager);
-
-        ArrayList<Fragment> fragments = new ArrayList<>();
-        fragments.add(FragmentMoneyType.newIntance(getIntent().getStringExtra("INSTER_TYPE")));
-        fragments.add(FragmentMoneyInster.newIntance(FragmentMoneyInster.INSTER_INPUT));
-
-        ArrayList<String> titles = new ArrayList<>();
-        titles.add("種類");
-        titles.add("進階");
-
-        viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), fragments, titles));
-    }
-
     private void initEditTexts() {
 
         money_edit = (EditText) findViewById(R.id.money_edit);
@@ -96,9 +111,9 @@ public class MoneyInsterActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                Log.d("Taiwan", s.toString());
-                moneyItem.setCost(Integer.valueOf(s.toString()));
+                if (!s.toString().equals("")) {
+                    moneyItem.setCost(Integer.valueOf(s.toString()));
+                }
             }
 
             @Override
@@ -125,8 +140,11 @@ public class MoneyInsterActivity extends AppCompatActivity {
                             throw new Exception("NONE_MONEY");
                         else if(moneyItem.getTitleText().equals(""))
                             throw new Exception("NONE_KIND");
-                        else
+                        else {
                             viewPager.setCurrentItem(1);
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(money_edit.getWindowToken(), 0);
+                        }
                     }catch (Exception e) {
                         if(e.getMessage() != null) {
                             if(e.getMessage().equals("NONE"))
@@ -137,30 +155,42 @@ public class MoneyInsterActivity extends AppCompatActivity {
                                 Toast.makeText(MoneyInsterActivity.this, "種類呢！", Toast.LENGTH_SHORT).show();
                         }
                     }
+                } else if(viewPager.getCurrentItem() == 1) {
+
+                    SQLiteManager sqLiteManager = new SQLiteManager(v.getContext());
+                    sqLiteManager.onOpen(sqLiteManager.getWritableDatabase());
+
+                    FragmentMoneyInster fragmentMoneyInster = (FragmentMoneyInster) ((ViewPagerAdapter) viewPager.getAdapter()).getItem(1);
+
+                    if (getIntent().getIntExtra("STORAGE_TYPE", -1) == STORAGE_TYPE_UPDATE) {
+                        sqLiteManager.updateMoneyData(
+                                CurrentAccountData.getMoneyTableName(), moneyItem.getRowId(),
+                                moneyItem.getTitleText(),
+                                moneyItem.getMONEY_TYPE(),
+                                Integer.valueOf(((EditText) findViewById(R.id.money_edit)).getText().toString()),
+                                fragmentMoneyInster.getContentText(), moneyItem.getDate());
+                    } else {
+                        sqLiteManager.insertMoneyData(
+                                CurrentAccountData.getMoneyTableName(),
+                                moneyItem.getTitleText(),
+                                moneyItem.getMONEY_TYPE(),
+                                Integer.valueOf(((EditText) findViewById(R.id.money_edit)).getText().toString()),
+                                fragmentMoneyInster.getContentText(), moneyItem.getDate());
+                    }
+                    sqLiteManager.close();
+                    finish();
                 }
-
-                /*SQLiteManager sqLiteManager = new SQLiteManager(v.getContext());
-                sqLiteManager.onOpen(sqLiteManager.getWritableDatabase());
-
-                if (getIntent().getIntExtra("STORAGE_TYPE", -1) == STORAGE_TYPE_UPDATE) {
-                    sqLiteManager.updateMoneyData(CurrentAccountData.getMoneyTableName(), moneyItem.getRowId(), moneyItem.getTitleText(), moneyItem.getMONEY_TYPE(),
-                            Integer.valueOf(((EditText) findViewById(R.id.money_edit)).getText().toString()),
-                            moneyItem.getContentText(), moneyItem.getDate());
-                } else {
-                    sqLiteManager.insertMoneyData(CurrentAccountData.getMoneyTableName(), moneyItem.getTitleText(), moneyItem.getMONEY_TYPE(),
-                            Integer.valueOf(((EditText) findViewById(R.id.money_edit)).getText().toString()),
-                            moneyItem.getContentText(), moneyItem.getDate());
-                }
-                sqLiteManager.close(); */
-
-                //finish();
             }
         });
     }
 
-    /*private void initUpdateMode() {
+    private void initViewPager() {
 
-        if(getIntent().getIntExtra("STORAGE_TYPE", -1) == STORAGE_TYPE_UPDATE) {
+        ArrayList<Fragment> fragments = new ArrayList<>();
+
+        fragments.add(FragmentMoneyType.newIntance(getIntent().getStringExtra("MONEY_TYPE")));
+
+        if(getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE) == FragmentMoneyInster.INSTER_UPDATE) {
 
             moneyItem = (MoneyItem) getIntent().getSerializableExtra("MoneyItem");
 
@@ -169,7 +199,7 @@ public class MoneyInsterActivity extends AppCompatActivity {
             Cursor cursor = sqLiteManager.getTypeDataWhereTypeName(moneyItem.getTitleText());
 
             ImageView type_icon = (ImageView) findViewById(R.id.type_icon);
-            type_icon.setColorFilter(moneyItem.getColor(), PorterDuff.Mode.SRC_IN);
+            type_icon.setColorFilter(Color.parseColor("#FFFFFF"), PorterDuff.Mode.SRC_IN);
             type_icon.setImageResource(getResources().getIdentifier(cursor.getString(1), "mipmap", getPackageName()));
 
             TextView type_name = (TextView) findViewById(R.id.type_name);
@@ -178,32 +208,35 @@ public class MoneyInsterActivity extends AppCompatActivity {
             EditText money_edit = (EditText) findViewById(R.id.money_edit);
             money_edit.setText(String.valueOf(moneyItem.getCost()));
 
-            TextView date_text = (TextView) findViewById(R.id.date_text);
-            date_text.setText(moneyItem.getDate());
-
-            content_edit.setText(moneyItem.getContentText());
-
-            if(moneyItem.getMONEY_TYPE().equals("income")) {
-
-                TextView income_text = (TextView) findViewById(R.id.income_text);
-                TextView cost_text = (TextView) findViewById(R.id.cost_text);
-
-                income_text.setTextColor(Color.parseColor("#FFFFFF"));
-                income_text.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
-
-                cost_text.setTextColor(ContextCompat.getColor(this, R.color.Grey_800));
-                cost_text.setBackgroundResource(R.drawable.button_background_selector);
-            }
+            fragments.add(FragmentMoneyInster.newIntance(getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE), moneyItem.getContentText(), moneyItem.getDate()));
 
             cursor.close();
             sqLiteManager.close();
+        } else {
+            moneyItem.setMONEY_TYPE("expense");
+            fragments.add(FragmentMoneyInster.newIntance(getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE), "", ""));
         }
-    }*/
+
+        NonScrollingViewPager viewPager = (NonScrollingViewPager) findViewById(R.id.viewPager);
+
+        ArrayList<String> titles = new ArrayList<>();
+        titles.add("種類");
+        titles.add("進階");
+
+        viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), fragments, titles));
+    }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
-        overridePendingTransition(0, R.anim.scale_bottom_right);
+
+        NonScrollingViewPager viewPager = (NonScrollingViewPager) findViewById(R.id.viewPager);
+
+        if(viewPager.getCurrentItem() == 0) {
+            finish();
+            overridePendingTransition(0, R.anim.scale_bottom_right);
+        } else if(viewPager.getCurrentItem() == 1)  {
+            viewPager.setCurrentItem(0);
+        }
     }
 }

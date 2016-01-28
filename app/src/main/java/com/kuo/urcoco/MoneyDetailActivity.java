@@ -93,7 +93,7 @@ public class MoneyDetailActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setClass(MoneyDetailActivity.this, MoneyInsterActivity.class);
                 intent.putExtra("MoneyItem", mMoneyItem);
-                intent.putExtra("STORAGE_TYPE", MoneyInsterActivity.STORAGE_TYPE_UPDATE);
+                intent.putExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_UPDATE);
                 startActivity(intent);
             }
         });
