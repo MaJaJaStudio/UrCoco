@@ -33,6 +33,7 @@ import com.kuo.urcoco.common.HeaderAccountView;
 import com.kuo.urcoco.common.adapter.SpinnerAdapter;
 import com.kuo.urcoco.common.alarm.AlarmOfDay;
 import com.kuo.urcoco.common.dialog.DateRangePickerDialog;
+import com.kuo.urcoco.common.dialog.InsterChoiceDialog;
 import com.kuo.urcoco.common.item.AccountItem;
 import com.kuo.urcoco.common.item.CurrentAccountData;
 import com.kuo.urcoco.presenter.account.FindAccountPresenter;
@@ -306,9 +307,11 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
+                /*Intent intent = new Intent();
                 intent.setClass(MainActivity.this, MoneyInsterActivity.class);
-                startActivity(intent);
+                startActivity(intent);*/
+                InsterChoiceDialog insterChoiceDialog = new InsterChoiceDialog();
+                insterChoiceDialog.show(getSupportFragmentManager(), "dialog");
             }
         });
     }
