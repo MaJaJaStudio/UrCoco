@@ -1,1 +1,1 @@
-include ':app', ':cooldatepicker-library', ':MPChartLib'
+include ':MPChartLib', ':app', ':cooldatepicker-library'
