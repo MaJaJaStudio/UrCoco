@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.kuo.urcoco.common.dialog.DatePickerDialog;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
 
@@ -73,6 +74,12 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
             try {
                 Bitmap sourceBitmap = BitmapFactory.decodeStream(mContentResolver.openInputStream(mUri));
                 photo.setImageBitmap(getScreenBitmap(sourceBitmap, photo.getWidth(), photo.getHeight()));
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                sourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
+                moneyInsterActivity.moneyItem.setImage(baos.toByteArray());
+
             } catch (FileNotFoundException e) {
                 Log.e("Exception", e.getMessage(), e);
             }

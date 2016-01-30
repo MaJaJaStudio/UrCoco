@@ -3,6 +3,7 @@ package com.kuo.urcoco;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteTransactionListener;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -87,17 +89,31 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
+        final SQLiteManager sqLiteManager = new SQLiteManager(this);
+
+        try {
+            mainHandler(sharedPreferences, sqLiteManager);
+        } catch (Exception ex) {
+            sqLiteManager.setSimpleTransactionListener(new SQLiteManager.SimpleTransactionListener() {
+                @Override
+                public void endTransaction() {
+                    mainHandler(sharedPreferences, sqLiteManager);
+                }
+            });
+        }
+    }
+
+    private void mainHandler(SharedPreferences sharedPreferences, SQLiteManager sqLiteManager) {
         initToolbar();
         initSpinner();
         initFab();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
-
         if(sharedPreferences.getBoolean(IS_FIRST, true)) {
-            createSQLitePresenter = new CreateSQLitePresenterImpl(this);
-            createSQLitePresenter.createSQLite(this);
+            createSQLitePresenter = new CreateSQLitePresenterImpl(MainActivity.this);
+            createSQLitePresenter.createSQLite(MainActivity.this);
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("alarm_hour_time", 12);
@@ -105,13 +121,12 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(IS_FIRST, false);
             editor.apply();
 
-            AlarmOfDay alarmOfDay = new AlarmOfDay(this);
+            AlarmOfDay alarmOfDay = new AlarmOfDay(MainActivity.this);
             alarmOfDay.onCreateAlarm();
         }
 
+        if (!sharedPreferences.getString("account", "").equals("")) {
 
-        if(!sharedPreferences.getString("account", "").equals("")) {
-            SQLiteManager sqLiteManager = new SQLiteManager(this);
             sqLiteManager.onOpen(sqLiteManager.getWritableDatabase());
 
             Cursor cursor = sqLiteManager.getAccountWhereAccountName(sharedPreferences.getString("account", ""));
@@ -128,13 +143,12 @@ public class MainActivity extends AppCompatActivity
 
             sqLiteManager.close();
             cursor.close();
-
             mFragmentMode = MAIN_FRAGMENT;
+
         }
 
-        findAccountPresenter = new FindAccountPresenterImpl(this);
-        findAccountPresenter.findAccount(this);
-
+        findAccountPresenter = new FindAccountPresenterImpl(MainActivity.this);
+        findAccountPresenter.findAccount(MainActivity.this);
     }
 
     @Override

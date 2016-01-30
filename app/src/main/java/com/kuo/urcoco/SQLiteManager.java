@@ -1,21 +1,30 @@
 package com.kuo.urcoco;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
+
+import com.kuo.urcoco.common.item.AccountItem;
+import com.kuo.urcoco.presenter.account.FindAccountPresenter;
+import com.kuo.urcoco.presenter.account.FindAccountPresenterImpl;
+import com.kuo.urcoco.view.account.FindAccountView;
+
+import java.util.ArrayList;
 
 /*
  * Created by User on 2015/11/1.
  */
-public class SQLiteManager extends SQLiteOpenHelper{
+public class SQLiteManager extends SQLiteOpenHelper {
 
     /*
     * SQLite Version Data;
     * */
-    private final static int DB_VERSION = 2;
+    private final static int DB_VERSION = 3;
     private final static String DB_NAME = "MoneyCatSQLite.db";
 
     /*
@@ -35,7 +44,7 @@ public class SQLiteManager extends SQLiteOpenHelper{
     private final static String ICON_COLOR_DARK = "iconColorDark";
     private final static String BUDGET = "budget";
 
-    private SQLiteDatabase db;
+    private static SQLiteDatabase db;
 
     /*
     * Type table column name;
@@ -54,8 +63,19 @@ public class SQLiteManager extends SQLiteOpenHelper{
     private final static String MONEY = "money";
     private final static String CONTENT = "content";
     private final static String MONEY_TYPE = "moneyType";
+    private final static String IMAGE = "image";
+
+    private SimpleTransactionListener simpleTransactionListener;
+
+    public void setSimpleTransactionListener(SimpleTransactionListener simpleTransactionListener) {
+        this.simpleTransactionListener = simpleTransactionListener;
+    }
 
     Context context;
+
+    public interface SimpleTransactionListener {
+        void endTransaction();
+    }
 
     public SQLiteManager (Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -84,16 +104,21 @@ public class SQLiteManager extends SQLiteOpenHelper{
 
         sqLiteDatabase.execSQL(createAccountTable);
         sqLiteDatabase.execSQL(createTypeTable);
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
 
+        Log.d("SQLite", "Upgrade！");
+
         if(i2 > i) {
 
             sqLiteDatabase.beginTransaction();//建立交易
             boolean success = false;//判斷參數
+
+            ProgressDialog progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("更新資料庫中...");
+            progressDialog.show();
 
             switch (i) {
                 case 1:
@@ -101,15 +126,42 @@ public class SQLiteManager extends SQLiteOpenHelper{
                     i++;
                     success = true;
                     break;
+                case 2:
+
+                    isLock = true;
+
+                    Cursor cursor = sqLiteDatabase.query(ACCOUNT_TABLE, new String[]{ROW_ID, ACCOUNT_NAME, MONEY_TABLE_NAME, ICON_COLOR, BUDGET, DATE, ICON_COLOR_DARK}, null, null, null, null, null);
+
+
+                    if(cursor != null) {
+                        cursor.moveToFirst();
+                        for(int j = 0 ; j < cursor.getCount() ; j++) {
+                            sqLiteDatabase.execSQL("ALTER TABLE " + cursor.getString(2) + " ADD COLUMN " + IMAGE + " BLOD DEFAULT " + null);
+                        }
+                    }
+                    success = true;
+                    i++;
+                    break;
             }
 
             if (success) {
+                isLock = false;
                 sqLiteDatabase.setTransactionSuccessful();//正確交易才成功
+                progressDialog.dismiss();
             }
+
             sqLiteDatabase.endTransaction();
+
+            if(simpleTransactionListener != null) {
+                simpleTransactionListener.endTransaction();
+            }
 
         } else {
             onCreate(sqLiteDatabase);
+
+            if(simpleTransactionListener != null) {
+                simpleTransactionListener.endTransaction();
+            }
         }
 
     }
@@ -354,9 +406,11 @@ public class SQLiteManager extends SQLiteOpenHelper{
                 + MONEY_TYPE + " TEXT, "
                 + MONEY + " INTEGER, "
                 + CONTENT + " TEXT, "
+                + IMAGE + "BLOD, "
                 + DATE + " TEXT);";
 
         db.execSQL(createDefaultTable);
     }
 
+    public static boolean isLock = false;
 }
