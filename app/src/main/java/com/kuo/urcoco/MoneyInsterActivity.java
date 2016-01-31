@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -162,13 +163,13 @@ public class MoneyInsterActivity extends AppCompatActivity {
 
                     FragmentMoneyInster fragmentMoneyInster = (FragmentMoneyInster) ((ViewPagerAdapter) viewPager.getAdapter()).getItem(1);
 
-                    if (getIntent().getIntExtra("STORAGE_TYPE", -1) == STORAGE_TYPE_UPDATE) {
-                        sqLiteManager.updateMoneyData(
+                    if (getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE) == FragmentMoneyInster.INSTER_UPDATE) {
+                        sqLiteManager.updateMoney(
                                 CurrentAccountData.getMoneyTableName(), moneyItem.getRowId(),
                                 moneyItem.getTitleText(),
                                 moneyItem.getMONEY_TYPE(),
                                 Integer.valueOf(((EditText) findViewById(R.id.money_edit)).getText().toString()),
-                                fragmentMoneyInster.getContentText(), moneyItem.getDate());
+                                fragmentMoneyInster.getContentText(), moneyItem.getDate(), moneyItem.getImage());
                     } else {
                         sqLiteManager.insertMoney(
                                 CurrentAccountData.getMoneyTableName(),
@@ -208,13 +209,22 @@ public class MoneyInsterActivity extends AppCompatActivity {
             EditText money_edit = (EditText) findViewById(R.id.money_edit);
             money_edit.setText(String.valueOf(moneyItem.getCost()));
 
-            fragments.add(FragmentMoneyInster.newIntance(getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE), moneyItem.getContentText(), moneyItem.getDate()));
+            LinearLayout titleLayout = (LinearLayout) findViewById(R.id.titleLayout);
+            titleLayout.setBackgroundColor(moneyItem.getColor());
+
+            toolbar.setBackgroundColor(moneyItem.getColor());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(moneyItem.getColorPrimaryDark());
+            }
+
+            fragments.add(FragmentMoneyInster.newIntance(getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE), moneyItem.getContentText(), moneyItem.getDate(), moneyItem.getImage()));
 
             cursor.close();
             sqLiteManager.close();
         } else {
             moneyItem.setMONEY_TYPE("expense");
-            fragments.add(FragmentMoneyInster.newIntance(getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE), "", ""));
+            fragments.add(FragmentMoneyInster.newIntance(getIntent().getIntExtra("INSTER_TYPE", FragmentMoneyInster.INSTER_TYPE), "", "", null));
         }
 
         NonScrollingViewPager viewPager = (NonScrollingViewPager) findViewById(R.id.viewPager);

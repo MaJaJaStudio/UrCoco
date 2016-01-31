@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,7 +30,7 @@ public class FragmentMoneyType extends Fragment implements FindMoneyTypeView {
 
     private FindMoneyTypePresenter findMoneyTypePresenter;
     private View rootView;
-    private int color;
+    private int color, colorDark;
 
     public static FragmentMoneyType newIntance(String type) {
 
@@ -48,6 +49,7 @@ public class FragmentMoneyType extends Fragment implements FindMoneyTypeView {
         rootView = inflater.inflate(R.layout.fragment_grid_view, container, false);
 
         color = ContextCompat.getColor(getActivity(), R.color.colorPrimary);
+        colorDark = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
 
         findMoneyTypePresenter = new FindMoneyTypePresenterImpl(this);
         findMoneyTypePresenter.onFindMoneyType(getActivity(), getArguments().getString("type", "expense"));
@@ -82,12 +84,30 @@ public class FragmentMoneyType extends Fragment implements FindMoneyTypeView {
                     public void onAnimationUpdate(ValueAnimator animator) {
                         moneyInsterActivity.toolbar.setBackgroundColor((int) animator.getAnimatedValue());
                         moneyInsterActivity.titleLayout.setBackgroundColor((int) animator.getAnimatedValue());
-                        getActivity().getWindow().setStatusBarColor((int) animator.getAnimatedValue());
                     }
 
                 });
+
                 colorAnimation.setDuration(300);
                 colorAnimation.start();
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    int colorDarkFrom = colorDark;
+                    int colorDarkTo = typeItem.getTypeColorDark();
+                    ValueAnimator colorDarkAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorDarkFrom, colorDarkTo);
+                    colorDarkAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animator) {
+                            getActivity().getWindow().setStatusBarColor((int) animator.getAnimatedValue());
+
+                        }
+
+                    });
+                    colorDarkAnimation.setDuration(300);
+                    colorDarkAnimation.start();
+                }
 
                 moneyInsterActivity.moneyItem.setTitleText(typeItem.getTypeName());
                 moneyInsterActivity.moneyItem.setMONEY_TYPE(typeItem.getTypeKind());
@@ -97,6 +117,7 @@ public class FragmentMoneyType extends Fragment implements FindMoneyTypeView {
                 moneyInsterActivity.type_name.setText(typeItem.getTypeName());
 
                 color = typeItem.getTypeColor();
+                colorDark = typeItem.getTypeColorDark();
 
             }
         });

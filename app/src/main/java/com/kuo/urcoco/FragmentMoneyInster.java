@@ -40,13 +40,14 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
 
     private Bitmap bitmap;
 
-    public static final FragmentMoneyInster newIntance(int INSTER_TYPE, String contentText, String date) {
+    public static final FragmentMoneyInster newIntance(int INSTER_TYPE, String contentText, String date, byte[] image) {
         FragmentMoneyInster fragmentMoneyInster = new FragmentMoneyInster();
 
         Bundle bundle = new Bundle();
         bundle.putInt("INSTER_TYPE", INSTER_TYPE);
         bundle.putString("CONTENT_TEXT", contentText);
         bundle.putString("DATE", date);
+        bundle.putByteArray("IMAGE", image);
         fragmentMoneyInster.setArguments(bundle);
 
         return fragmentMoneyInster;
@@ -120,6 +121,12 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
         } else if(getArguments().getInt("INSTER_TYPE", INSTER_TYPE) == INSTER_UPDATE) {
             dateText.setText(getArguments().getString("DATE"));
             contentEdit.setText(getArguments().getString("CONTENT_TEXT"));
+
+            if(getArguments().getByteArray("IMAGE") != null) {
+                byte[] in = getArguments().getByteArray("IMAGE");
+                Bitmap bitmap = BitmapFactory.decodeByteArray(in, 0, in.length);
+                photo.setImageBitmap(bitmap);
+            }
         }
 
     }
@@ -165,10 +172,9 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
                 startActivityForResult(openImage, IMAGE_RESULT_CODE);
                 break;
             case R.id.close:
-                if(bitmap != null) {
-                    bitmap = null;
-                    photo.setImageBitmap(null);
-                }
+                photo.setImageBitmap(null);
+                MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
+                moneyInsterActivity.moneyItem.setImage(null);
                 break;
         }
     }

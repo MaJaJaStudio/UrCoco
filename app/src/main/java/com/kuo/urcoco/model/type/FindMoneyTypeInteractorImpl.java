@@ -35,6 +35,7 @@ public class FindMoneyTypeInteractorImpl implements FindMoneyTypeInteractor {
                 typeItem.setTypeName(cursor.getString(1));
                 typeItem.setTypePath(cursor.getString(2));
                 typeItem.setTypeColor(cursor.getInt(3));
+                typeItem.setTypeColorDark(cursor.getInt(4));
                 typeItems.add(typeItem);
                 cursor.moveToNext();
             }

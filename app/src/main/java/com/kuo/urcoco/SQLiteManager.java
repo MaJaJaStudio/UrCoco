@@ -388,6 +388,19 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     }
 
+    public long updateMoney(String tableName, int rowId, String typeName, String moneyType, Integer money, String content, String date, byte[] image) {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TYPE_NAME, typeName);
+        contentValues.put(MONEY_TYPE, moneyType);
+        contentValues.put(MONEY, money);
+        contentValues.put(CONTENT, content);
+        contentValues.put(IMAGE, image);
+        contentValues.put(DATE, date);
+
+        return db.update(tableName, contentValues, ROW_ID + "=" + rowId, null);
+    }
+
     public void updateMoneyData(String tableName, int rowId, String typeName, String moneyType, Integer money, String content, String date) {
 
         ContentValues contentValues = new ContentValues();

@@ -1,5 +1,7 @@
 package com.kuo.urcoco;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -232,15 +234,41 @@ public class AccountInsterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
 
+                int colorFrom = mColorPrimary;
+                int colorTo = mColorAdapter.getColor(position);
+                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animator) {
+                        toolbar.setBackgroundColor((int) animator.getAnimatedValue());
+                        mColorImage.setBackgroundColor((int) animator.getAnimatedValue());
+                    }
+
+                });
+                colorAnimation.setDuration(300);
+                colorAnimation.start();
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    int colorDarkFrom = mColorPrimaryDark;
+                    int colorDarkTo = mColorAdapter.getDarkColor(position);
+                    ValueAnimator colorDarkAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorDarkFrom, colorDarkTo);
+                    colorDarkAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animator) {
+                            getWindow().setStatusBarColor((int) animator.getAnimatedValue());
+
+                        }
+
+                    });
+                    colorDarkAnimation.setDuration(300);
+                    colorDarkAnimation.start();
+                }
+
                 mColorPrimary = mColorAdapter.getColor(position);
                 mColorPrimaryDark = mColorAdapter.getDarkColor(position);
-
-                toolbar.setBackgroundColor(mColorPrimary);
-                mColorImage.setBackgroundColor(mColorPrimary);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    getWindow().setStatusBarColor(mColorPrimaryDark);
-
             }
         });
 

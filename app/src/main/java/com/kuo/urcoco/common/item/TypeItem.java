@@ -9,6 +9,15 @@ public class TypeItem {
     private String typeName;
     private String typePath;
     private int typeColor;
+    private int typeColorDark;
+
+    public void setTypeColorDark(int typeColorDark) {
+        this.typeColorDark = typeColorDark;
+    }
+
+    public int getTypeColorDark() {
+        return typeColorDark;
+    }
 
     public void setTypeColor(int typeColor) {
         this.typeColor = typeColor;
