@@ -18,7 +18,7 @@ public class MoneyItem implements Serializable {
     private String tableName;
     private String date;
     private String MONEY_TYPE;
-    private byte[] image;
+    private byte[] image = null;
     private boolean isCheck = false;
 
     private int layoutPosition;

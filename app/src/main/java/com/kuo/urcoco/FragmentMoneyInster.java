@@ -76,7 +76,7 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
                 photo.setImageBitmap(getScreenBitmap(sourceBitmap, photo.getWidth(), photo.getHeight()));
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                sourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                getScreenBitmap(sourceBitmap, photo.getWidth(), photo.getHeight()).compress(Bitmap.CompressFormat.PNG, 100, baos);
                 MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
                 moneyInsterActivity.moneyItem.setImage(baos.toByteArray());
 

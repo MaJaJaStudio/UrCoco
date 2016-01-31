@@ -190,6 +190,19 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return db.insert(ACCOUNT_TABLE, null, contentValues);
     }
 
+    public long insertMoney(String tableName, String typeName, String moneyType, Integer money, String content, byte[] image, String date) {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TYPE_NAME, typeName);
+        contentValues.put(MONEY_TYPE, moneyType);
+        contentValues.put(MONEY, money);
+        contentValues.put(CONTENT, content);
+        contentValues.put(IMAGE, image);
+        contentValues.put(DATE, date);
+
+        return getWritableDatabase().insert(tableName, null, contentValues);
+    }
+
     public long insertMoneyData(String tableName, String typeName, String moneyType, Integer money, String content, String date){
 
         ContentValues contentValues = new ContentValues();
@@ -320,7 +333,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public Cursor getMoneyDataRangeOfDate(String tableName, String startDate, String endDate) {
-        Cursor cursor = db.query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, DATE + " BETWEEN ? AND ?", new String[]{startDate, endDate}, null, null, null, null);
+        Cursor cursor = db.query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE, IMAGE}, DATE + " BETWEEN ? AND ?", new String[]{startDate, endDate}, null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -406,7 +419,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 + MONEY_TYPE + " TEXT, "
                 + MONEY + " INTEGER, "
                 + CONTENT + " TEXT, "
-                + IMAGE + "BLOD, "
+                + IMAGE + " BLOD, "
                 + DATE + " TEXT);";
 
         db.execSQL(createDefaultTable);

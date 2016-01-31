@@ -170,12 +170,12 @@ public class MoneyInsterActivity extends AppCompatActivity {
                                 Integer.valueOf(((EditText) findViewById(R.id.money_edit)).getText().toString()),
                                 fragmentMoneyInster.getContentText(), moneyItem.getDate());
                     } else {
-                        sqLiteManager.insertMoneyData(
+                        sqLiteManager.insertMoney(
                                 CurrentAccountData.getMoneyTableName(),
                                 moneyItem.getTitleText(),
                                 moneyItem.getMONEY_TYPE(),
                                 Integer.valueOf(((EditText) findViewById(R.id.money_edit)).getText().toString()),
-                                fragmentMoneyInster.getContentText(), moneyItem.getDate());
+                                fragmentMoneyInster.getContentText(), moneyItem.getImage(), moneyItem.getDate());
                     }
                     sqLiteManager.close();
                     finish();

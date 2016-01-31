@@ -45,6 +45,7 @@ public class FindMoneyOfRangeDateInteractorImpl implements FindMoneyOfRangeDateI
                         moneyItem.setCost(cursor.getInt(3));
                         moneyItem.setContentText(cursor.getString(4));
                         moneyItem.setDate(cursor.getString(5));
+                        moneyItem.setImage(cursor.getBlob(6));
                         moneyItems.add(moneyItem);
 
                         if (cursor.getString(2).equals("expense"))

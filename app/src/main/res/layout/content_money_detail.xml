@@ -9,88 +9,106 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_money_detail">
 
-
-    <LinearLayout
-        android:id="@+id/infoLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
+        android:layout_height="match_parent">
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="8dp">
-
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_margin="8dp"
-                android:contentDescription="@string/contentDescription"
-                android:background="@mipmap/ic_local_atm_black_48dp"
-                android:alpha="0.5"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/money"
-                android:textSize="@dimen/activity_sub_text_size"
-                android:textColor="@color/Grey_600"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/moneyText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/activity_title_text_size"
-                android:textColor="@color/colorPrimary"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="TWD"
-                android:textSize="@dimen/activity_sub_text_size"
-                android:textColor="@color/Grey_600"/>
-
-        </LinearLayout>
-
-        <LinearLayout
+            android:id="@+id/infoLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="8dp">
+            android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_margin="8dp"
-                android:contentDescription="@string/contentDescription"
-                android:background="@mipmap/ic_mode_edit_black_36dp"
-                android:alpha="0.5"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/contentDescription"
+                    android:background="@mipmap/ic_local_atm_black_48dp"
+                    android:alpha="0.5"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/money"
+                    android:textSize="@dimen/activity_sub_text_size"
+                    android:textColor="@color/Grey_600"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/moneyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/activity_title_text_size"
+                    android:textColor="@color/colorPrimary"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="TWD"
+                    android:textSize="@dimen/activity_sub_text_size"
+                    android:textColor="@color/Grey_600"/>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp">
 
-                <TextView
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/contentDescription"
+                    android:background="@mipmap/ic_mode_edit_black_36dp"
+                    android:alpha="0.5"/>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/content"
-                    android:textSize="@dimen/activity_sub_text_size"
-                    android:textColor="@color/Grey_600"/>
+                    android:orientation="vertical"
+                    android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@+id/contentText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/activity_body_text_size"
-                    android:textColor="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/content"
+                        android:textSize="@dimen/activity_sub_text_size"
+                        android:textColor="@color/Grey_600"/>
+
+                    <TextView
+                        android:id="@+id/contentText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/activity_body_text_size"
+                        android:textColor="@color/colorPrimary"/>
+                </LinearLayout>
             </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="@dimen/activity_horizontal_margin">
+
+                <ImageView
+                    android:id="@+id/photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:src="@mipmap/ic_launcher"/>
+
+            </RelativeLayout>
+
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

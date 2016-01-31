@@ -2,6 +2,8 @@ package com.kuo.urcoco;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -122,5 +125,13 @@ public class MoneyDetailActivity extends AppCompatActivity {
 
         TextView contentText = (TextView) findViewById(R.id.contentText);
         contentText.setText(mMoneyItem.getContentText());
+
+
+        if(mMoneyItem.getImage() != null) {
+            ImageView imageView = (ImageView) findViewById(R.id.photo);
+            byte[] in = mMoneyItem.getImage();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(in, 0, in.length);
+            imageView.setImageBitmap(bitmap);
+        }
     }
 }
