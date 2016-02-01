@@ -105,7 +105,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clickable="true"
-                    android:src="@mipmap/ic_add_a_photo_white_small"/>
+                    android:src="@mipmap/ic_add_a_photo_white_small"
+                    android:tint="@color/Grey_400"/>
 
             </RelativeLayout>
         </LinearLayout>
