@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.LoginFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,19 +71,21 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == IMAGE_RESULT_CODE) {
-            Uri mUri = data.getData();
-            ContentResolver mContentResolver = getActivity().getContentResolver();
-            try {
-                Bitmap sourceBitmap = BitmapFactory.decodeStream(mContentResolver.openInputStream(mUri));
-                photo.setImageBitmap(getScreenBitmap(sourceBitmap, photo.getWidth(), photo.getHeight()));
+            if(data != null) {
+                Uri mUri = data.getData();
+                ContentResolver mContentResolver = getActivity().getContentResolver();
+                try {
+                    Bitmap sourceBitmap = BitmapFactory.decodeStream(mContentResolver.openInputStream(mUri));
+                    photo.setImageBitmap(getScreenBitmap(sourceBitmap, photo.getWidth(), photo.getHeight()));
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                getScreenBitmap(sourceBitmap, photo.getWidth(), photo.getHeight()).compress(Bitmap.CompressFormat.PNG, 100, baos);
-                MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
-                moneyInsterActivity.moneyItem.setImage(baos.toByteArray());
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    getScreenBitmap(sourceBitmap, photo.getWidth(), photo.getHeight()).compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
+                    moneyInsterActivity.moneyItem.setImage(baos.toByteArray());
 
-            } catch (FileNotFoundException e) {
-                Log.e("Exception", e.getMessage(), e);
+                } catch (FileNotFoundException e) {
+                    Log.e("Exception", e.getMessage(), e);
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -173,6 +176,7 @@ public class FragmentMoneyInster extends Fragment implements View.OnClickListene
                 break;
             case R.id.close:
                 photo.setImageBitmap(null);
+                photo.setImageResource(R.mipmap.ic_add_a_photo_white_small);
                 MoneyInsterActivity moneyInsterActivity = (MoneyInsterActivity) getActivity();
                 moneyInsterActivity.moneyItem.setImage(null);
                 break;

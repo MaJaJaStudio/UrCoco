@@ -31,6 +31,7 @@ import com.kuo.urcoco.common.adapter.ViewPagerAdapter;
 import com.kuo.urcoco.common.item.CurrentAccountData;
 import com.kuo.urcoco.common.item.MoneyItem;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 
 /*
@@ -143,6 +144,11 @@ public class MoneyInsterActivity extends AppCompatActivity {
                             throw new Exception("NONE_KIND");
                         else {
                             viewPager.setCurrentItem(1);
+
+                            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                            fab.setImageResource(R.mipmap.ic_send_black_36dp);
+                            fab.setColorFilter(Color.parseColor("#FFFFFF"), PorterDuff.Mode.SRC_IN);
+
                             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(money_edit.getWindowToken(), 0);
                         }
@@ -238,7 +244,6 @@ public class MoneyInsterActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
 
         NonScrollingViewPager viewPager = (NonScrollingViewPager) findViewById(R.id.viewPager);
 
@@ -247,6 +252,8 @@ public class MoneyInsterActivity extends AppCompatActivity {
             overridePendingTransition(0, R.anim.scale_bottom_right);
         } else if(viewPager.getCurrentItem() == 1)  {
             viewPager.setCurrentItem(0);
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setImageResource(R.mipmap.ic_arrow_forward_white_24dp);
         }
     }
 }
