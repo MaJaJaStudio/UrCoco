@@ -3,7 +3,6 @@ package com.kuo.urcoco;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteTransactionListener;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,9 +73,6 @@ public class MainActivity extends AppCompatActivity
     private int nav_check = 0;
     private boolean navAccountGroup = false;
 
-    private CreateSQLitePresenter createSQLitePresenter;
-    private FindAccountPresenter findAccountPresenter;
-
     private SpinnerAdapter spinnerAdapter;
 
     /**
@@ -112,7 +107,7 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         if(sharedPreferences.getBoolean(IS_FIRST, true)) {
-            createSQLitePresenter = new CreateSQLitePresenterImpl(MainActivity.this);
+            CreateSQLitePresenter createSQLitePresenter = new CreateSQLitePresenterImpl(MainActivity.this);
             createSQLitePresenter.createSQLite(MainActivity.this);
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -126,8 +121,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (!sharedPreferences.getString("account", "").equals("")) {
-
-            sqLiteManager.onOpen(sqLiteManager.getWritableDatabase());
 
             Cursor cursor = sqLiteManager.getAccountWhereAccountName(sharedPreferences.getString("account", ""));
 
@@ -147,7 +140,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        findAccountPresenter = new FindAccountPresenterImpl(MainActivity.this);
+        FindAccountPresenter findAccountPresenter = new FindAccountPresenterImpl(MainActivity.this);
         findAccountPresenter.findAccount(MainActivity.this);
     }
 
@@ -240,7 +233,6 @@ public class MainActivity extends AppCompatActivity
             ((TextView) spinner_nav.getChildAt(0)).setText("今天");
 
             spinnerAdapter.setCurItemId(0);
-            spinnerAdapter.setOldSelectedPosition(0);
 
             ChartFragment chartFragment = new ChartFragment();
             fragmentTransaction.replace(R.id.frameLayout, chartFragment, "chartFragment");
@@ -321,143 +313,146 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent();
-                intent.setClass(MainActivity.this, MoneyInsterActivity.class);
-                startActivity(intent);*/
                 InsterChoiceDialog insterChoiceDialog = new InsterChoiceDialog();
                 insterChoiceDialog.show(getSupportFragmentManager(), "dialog");
             }
         });
     }
 
+    private String[] getDateRange(int index) {
+
+        String[] dates = new String[2];
+        Calendar calendar = Calendar.getInstance();
+        String date_1 = "", date_2 = "";
+        String month, day;
+        String formatStr = "%02d";
+
+        switch(index) {
+            case 0:
+                month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
+                day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
+
+                date_1 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+                date_2 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+                break;
+            case 1:
+                calendar.setFirstDayOfWeek(Calendar.SUNDAY);
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+
+                month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
+                day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
+
+                date_1 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+
+                calendar.add(Calendar.DAY_OF_MONTH, 6);
+
+                month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
+                day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
+
+                date_2 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+                break;
+            case 2:
+                calendar = Calendar.getInstance();
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+                month = String.format(formatStr, (calendar.get(Calendar.MONTH) + 1));
+                day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
+
+                date_1 = calendar.get(Calendar.YEAR) + "-" + month + "-01";
+                date_2 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+                break;
+        }
+
+        dates[0] = date_1;
+        dates[1] = date_2;
+
+        return dates;
+    }
+
     private Spinner.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(final AdapterView<?> parent, View view, final int position, long id) {
-            Calendar calendar = Calendar.getInstance();
+
             String date_1 = "", date_2 = "";
-            String month, day;
-            String formatStr = "%02d";
+            String[] dates;
 
-            switch (position) {
-                case 0:
+            if(position != 3) {
 
-                    month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
-                    day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
+                dates = getDateRange(position);
 
-                    date_1 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
-                    date_2 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+                date_1 = dates[0];
+                date_2 = dates[1];
 
-                    spinnerAdapter.setCurItemId(position);
-                    spinnerAdapter.setOldSelectedPosition(position);
-                    //bottomLayout.setVisibility(View.VISIBLE);
-                    break;
-                case 1:
+                spinnerAdapter.setCurItemId(position);
 
-                    calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-                    calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            } else if(position == 3) {
+                Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
 
-                    month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
-                    day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
+                if(!resume) {
+                    DateRangePickerDialog dateRangePickerDialog = new DateRangePickerDialog();
+                    dateRangePickerDialog.setOnEnterClickListener(new DateRangePickerDialog.OnEnterClickListener() {
+                        @Override
+                        public void onClick(int year_1, int month_1, int day_1, int year_2, int month_2, int day_2) {
+                            String date_1, date_2;
 
-                    date_1 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+                            String formatStr = "%02d";
 
-                    calendar.add(Calendar.DAY_OF_MONTH, 6);
+                            date_1 = year_1 + "-" + String.format(formatStr, month_1) + "-" + String.format(formatStr, day_1);
+                            date_2 = year_2 + "-" + String.format(formatStr, month_2) + "-" + String.format(formatStr, day_2);
 
-                    month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
-                    day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
+                            rangeDate = date_1 + "~" + date_2;
 
-                    date_2 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
+                            if(mFragmentMode == MAIN_FRAGMENT) {
+                                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                                if(getSupportFragmentManager().findFragmentByTag("moneyFragment") == null) {
+                                    MoneyFragment moneyFragment = MoneyFragment.newIntance(date_1, date_2);
+                                    fragmentTransaction.replace(R.id.frameLayout, moneyFragment, "moneyFragment");
+                                    fragmentTransaction.commit();
 
-                    spinnerAdapter.setCurItemId(position);
-                    spinnerAdapter.setOldSelectedPosition(position);
-
-                    break;
-                case 2:
-
-                    calendar = Calendar.getInstance();
-                    calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-                    month = String.format(formatStr, (calendar.get(Calendar.MONTH) + 1));
-                    day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
-
-                    date_1 = calendar.get(Calendar.YEAR) + "-" + month + "-01";
-                    date_2 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
-
-                    spinnerAdapter.setCurItemId(position);
-                    spinnerAdapter.setOldSelectedPosition(position);
-                    break;
-                case 3:
-
-                    Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
-
-                    if(!resume) {
-                        DateRangePickerDialog dateRangePickerDialog = new DateRangePickerDialog();
-                        dateRangePickerDialog.setOnEnterClickListener(new DateRangePickerDialog.OnEnterClickListener() {
-                            @Override
-                            public void onClick(int year_1, int month_1, int day_1, int year_2, int month_2, int day_2) {
-                                String date_1, date_2;
-
-                                String formatStr = "%02d";
-
-                                date_1 = year_1 + "-" + String.format(formatStr, month_1) + "-" + String.format(formatStr, day_1);
-                                date_2 = year_2 + "-" + String.format(formatStr, month_2) + "-" + String.format(formatStr, day_2);
-
-                                rangeDate = date_1 + "~" + date_2;
-
-                                if(mFragmentMode == MAIN_FRAGMENT) {
-                                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                                    if(getSupportFragmentManager().findFragmentByTag("moneyFragment") == null) {
-                                        MoneyFragment moneyFragment = MoneyFragment.newIntance(date_1, date_2);
-                                        fragmentTransaction.replace(R.id.frameLayout, moneyFragment, "moneyFragment");
-                                        fragmentTransaction.commit();
-
-                                    } else {
-                                        ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).updateRangeDate(date_1, date_2);
-                                    }
-                                } else if(mFragmentMode == CHART_FRAGMENT) {
-                                    ChartFragment chartFragment = (ChartFragment) getSupportFragmentManager().findFragmentByTag("chartFragment");
-                                    ChartChildFragment chartChildFragment_1 = chartFragment.getViewPagerFragmentItem(0);
-                                    ChartChildFragment chartChildFragment_2 = chartFragment.getViewPagerFragmentItem(1);
-
-                                    chartChildFragment_1.setRangeDate(date_1, date_2);
-                                    chartChildFragment_2.setRangeDate(date_1, date_2);
-
-                                    chartChildFragment_1.update();
-                                    chartChildFragment_2.update();
+                                } else {
+                                    ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).updateRangeDate(date_1, date_2);
                                 }
+                            } else if(mFragmentMode == CHART_FRAGMENT) {
+                                ChartFragment chartFragment = (ChartFragment) getSupportFragmentManager().findFragmentByTag("chartFragment");
+                                ChartChildFragment chartChildFragment_1 = chartFragment.getViewPagerFragmentItem(0);
+                                ChartChildFragment chartChildFragment_2 = chartFragment.getViewPagerFragmentItem(1);
 
-                                spinnerAdapter.setCurItemId(position);
+                                chartChildFragment_1.setRangeDate(date_1, date_2);
+                                chartChildFragment_2.setRangeDate(date_1, date_2);
 
-                                Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
-                                spinner_nav.setLayoutParams(new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
-
-                                ((TextView) parent.getChildAt(0)).setText(rangeDate);
-
-                                resetSpinnerItemPosition();
+                                chartChildFragment_1.update();
+                                chartChildFragment_2.update();
                             }
 
-                        });
-                        dateRangePickerDialog.setOnCancelClickListener(new DateRangePickerDialog.OnCancelClickListener() {
-                            @Override
-                            public void onClick() {
-                            }
-                        });
-                        dateRangePickerDialog.show(getSupportFragmentManager(), "dialog");
-                    } else {
-                        resume = false;
-                        ((TextView) parent.getChildAt(0)).setText(rangeDate);
-                    }
+                            spinnerAdapter.setCurItemId(position);
 
-                    try {
-                        Field field = AdapterView.class.getDeclaredField("mOldSelectedPosition"); //mOldSelectedPosition
-                        field.setAccessible(true);
-                        field.setInt(spinner_nav, AdapterView.INVALID_POSITION);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                            Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
+                            spinner_nav.setLayoutParams(new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
 
+                            ((TextView) parent.getChildAt(0)).setText(rangeDate);
 
-                    break;
+                            resetSpinnerItemPosition();
+                        }
+
+                    });
+                    dateRangePickerDialog.setOnCancelClickListener(new DateRangePickerDialog.OnCancelClickListener() {
+                        @Override
+                        public void onClick() {
+                        }
+                    });
+                    dateRangePickerDialog.show(getSupportFragmentManager(), "dialog");
+                } else {
+                    resume = false;
+                    ((TextView) parent.getChildAt(0)).setText(rangeDate);
+                }
+
+                try {
+                    Field field = AdapterView.class.getDeclaredField("mOldSelectedPosition"); //mOldSelectedPosition
+                    field.setAccessible(true);
+                    field.setInt(spinner_nav, AdapterView.INVALID_POSITION);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             if(!date_1.equals("") && !date_2.equals("")) {
@@ -472,6 +467,7 @@ public class MainActivity extends AppCompatActivity
                         ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).updateRangeDate(date_1, date_2);
                     }
                 } else if(mFragmentMode == CHART_FRAGMENT) {
+
                     ChartFragment chartFragment = (ChartFragment) getSupportFragmentManager().findFragmentByTag("chartFragment");
                     ChartChildFragment chartChildFragment_1 = chartFragment.getViewPagerFragmentItem(0);
                     ChartChildFragment chartChildFragment_2 = chartFragment.getViewPagerFragmentItem(1);
@@ -481,6 +477,7 @@ public class MainActivity extends AppCompatActivity
 
                     chartChildFragment_1.update();
                     chartChildFragment_2.update();
+
                 }
 
                 Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
@@ -620,7 +617,6 @@ public class MainActivity extends AppCompatActivity
             ((TextView) spinner_nav.getChildAt(0)).setText("今天");
 
             spinnerAdapter.setCurItemId(0);
-            spinnerAdapter.setOldSelectedPosition(0);
 
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);

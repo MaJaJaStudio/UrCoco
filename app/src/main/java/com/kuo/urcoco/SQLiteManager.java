@@ -44,8 +44,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
     private final static String ICON_COLOR_DARK = "iconColorDark";
     private final static String BUDGET = "budget";
 
-    private static SQLiteDatabase db;
-
     /*
     * Type table column name;
     * */
@@ -109,12 +107,10 @@ public class SQLiteManager extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
 
-        Log.d("SQLite", "Upgrade！");
-
         if(i2 > i) {
 
-            sqLiteDatabase.beginTransaction();//建立交易
-            boolean success = false;//判斷參數
+            sqLiteDatabase.beginTransaction();
+            boolean success = false;
 
             ProgressDialog progressDialog = new ProgressDialog(context);
             progressDialog.setTitle("更新資料庫中...");
@@ -127,8 +123,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
                     success = true;
                     break;
                 case 2:
-
-                    isLock = true;
 
                     Cursor cursor = sqLiteDatabase.query(ACCOUNT_TABLE, new String[]{ROW_ID, ACCOUNT_NAME, MONEY_TABLE_NAME, ICON_COLOR, BUDGET, DATE, ICON_COLOR_DARK}, null, null, null, null, null);
 
@@ -145,7 +139,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
             }
 
             if (success) {
-                isLock = false;
                 sqLiteDatabase.setTransactionSuccessful();//正確交易才成功
                 progressDialog.dismiss();
             }
@@ -158,10 +151,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
         } else {
             onCreate(sqLiteDatabase);
-
-            if(simpleTransactionListener != null) {
-                simpleTransactionListener.endTransaction();
-            }
         }
 
     }
@@ -169,7 +158,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
-        this.db = db;
     }
 
     @Override
@@ -187,7 +175,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(BUDGET, budget);
         contentValues.put(DATE, date);
 
-        return db.insert(ACCOUNT_TABLE, null, contentValues);
+        return getWritableDatabase().insert(ACCOUNT_TABLE, null, contentValues);
     }
 
     public long insertMoney(String tableName, String typeName, String moneyType, Integer money, String content, byte[] image, String date) {
@@ -212,7 +200,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(CONTENT, content);
         contentValues.put(DATE, date);
 
-        return db.insert(tableName, null, contentValues);
+        return getWritableDatabase().insert(tableName, null, contentValues);
     }
 
     public long insterTypeData(String typeKind, String typeName, String typePath, int typeColor, int typeColorDark) {
@@ -224,16 +212,16 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(TYPE_COLOR, typeColor);
         contentValues.put(TYPE_COLOR_DARK, typeColorDark);
 
-        return db.insert(TYPE_TABLE, null, contentValues);
+        return getWritableDatabase().insert(TYPE_TABLE, null, contentValues);
     }
 
     public Cursor getAccountData() {
-        return db.query(ACCOUNT_TABLE, new String[]{ROW_ID, ACCOUNT_NAME, MONEY_TABLE_NAME, ICON_COLOR, BUDGET, DATE, ICON_COLOR_DARK}, null, null, null, null, null);
+        return getWritableDatabase().query(ACCOUNT_TABLE, new String[]{ROW_ID, ACCOUNT_NAME, MONEY_TABLE_NAME, ICON_COLOR, BUDGET, DATE, ICON_COLOR_DARK}, null, null, null, null, null);
     }
 
     public Cursor getAccountWhereAccountName(String accountName) {
 
-        Cursor cursor = db.query(ACCOUNT_TABLE, new String[] {ROW_ID, ACCOUNT_NAME, MONEY_TABLE_NAME, ICON_COLOR, BUDGET, DATE, ICON_COLOR_DARK}, ACCOUNT_NAME + "=" + "'" + accountName + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(ACCOUNT_TABLE, new String[]{ROW_ID, ACCOUNT_NAME, MONEY_TABLE_NAME, ICON_COLOR, BUDGET, DATE, ICON_COLOR_DARK}, ACCOUNT_NAME + "=" + "'" + accountName + "'", null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -248,12 +236,12 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(BUDGET, color);
         contentValues.put(ICON_COLOR, budget);
         contentValues.put(ICON_COLOR_DARK, colorDark);
-        db.update(ACCOUNT_TABLE, contentValues, ROW_ID + "=" + rowId, null);
+        getWritableDatabase().update(ACCOUNT_TABLE, contentValues, ROW_ID + "=" + rowId, null);
     }
 
     public Cursor getMoneyDataDescDateNotRepeat(String tableName){
 
-        Cursor cursor = db.query(true, tableName, new String[] {DATE}, null, null, null, null, "date(" + DATE + ")" + " DESC" , null);
+        Cursor cursor = getWritableDatabase().query(true, tableName, new String[]{DATE}, null, null, null, null, "date(" + DATE + ")" + " DESC", null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -263,12 +251,12 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public Cursor gettMoneyData(String tableName) {
-        return db.query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, null, null, null, null, null);
+        return getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, null, null, null, null, null);
     }
 
     public Cursor getMoneyDataWhereRowId(String tableName, int id){
 
-        Cursor cursor = db.query(tableName, new String[] {ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, ROW_ID + "=" + "'" + id + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, ROW_ID + "=" + "'" + id + "'", null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -279,7 +267,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public Cursor getMoneyDataWhereType(String tableName, String typeName){
 
-        Cursor cursor = db.query(tableName, new String[] {ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, TYPE_NAME + "=" + "'" + typeName + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, TYPE_NAME + "=" + "'" + typeName + "'", null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -290,7 +278,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public Cursor getMoneyDataWhereTypeAndRangeDate(String tableName, String moneyType, String typeName, String startDate, String endDate){
 
-        Cursor cursor = db.query(tableName, new String[] {ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, MONEY_TYPE + "=?" + " AND " + TYPE_NAME + "=?" + " AND " + DATE + " BETWEEN ? AND ?", new String[]{moneyType, typeName, startDate, endDate}, null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, MONEY_TYPE + "=?" + " AND " + TYPE_NAME + "=?" + " AND " + DATE + " BETWEEN ? AND ?", new String[]{moneyType, typeName, startDate, endDate}, null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -301,7 +289,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public Cursor getMoneyDataWhereMoneyType(String tableName, String moneyType){
 
-        Cursor cursor = db.query(tableName, new String[] {ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, MONEY_TYPE + "=" + "'" + moneyType + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, MONEY_TYPE + "=" + "'" + moneyType + "'", null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -312,7 +300,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public Cursor getMoneyDataWhereMoneyTypeAndTypeName(String tableName, String typeName, String moneyType){
 
-        Cursor cursor = db.query(tableName, new String[] {ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, TYPE_NAME + "=" + "'" + typeName + "'" + " AND " + MONEY_TYPE + "=" + "'" + moneyType + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, TYPE_NAME + "=" + "'" + typeName + "'" + " AND " + MONEY_TYPE + "=" + "'" + moneyType + "'", null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -323,7 +311,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public Cursor getMoneyDataOfDate(String tableName, String date){
 
-        Cursor cursor = db.query(tableName, new String[] {ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, DATE + "=?", new String[]{date}, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, DATE + "=?", new String[]{date}, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -333,7 +321,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public Cursor getMoneyDataRangeOfDate(String tableName, String startDate, String endDate) {
-        Cursor cursor = db.query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE, IMAGE}, DATE + " BETWEEN ? AND ?", new String[]{startDate, endDate}, null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE, IMAGE}, DATE + " BETWEEN ? AND ?", new String[]{startDate, endDate}, null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -343,7 +331,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public Cursor getMoneyDataRangeOfDateAndType(String tableName, String startDate, String endDate, String moneyType) {
-        Cursor cursor = db.query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, DATE + " BETWEEN ? AND ?" + " AND " + MONEY_TYPE + "= ?", new String[]{startDate, endDate, moneyType}, null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(tableName, new String[]{ROW_ID, TYPE_NAME, MONEY_TYPE, MONEY, CONTENT, DATE}, DATE + " BETWEEN ? AND ?" + " AND " + MONEY_TYPE + "= ?", new String[]{startDate, endDate, moneyType}, null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -354,7 +342,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public boolean getSresultByName(String name) {
 
-        Cursor cursor = db.query(ACCOUNT_TABLE, new String[] {ROW_ID, ACCOUNT_NAME}, ACCOUNT_NAME + "=" + "'" + name + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(ACCOUNT_TABLE, new String[]{ROW_ID, ACCOUNT_NAME}, ACCOUNT_NAME + "=" + "'" + name + "'", null, null, null, null);
 
         if (cursor.moveToFirst()) {
             return true;
@@ -366,7 +354,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public Cursor getTypeDataWhereTypeName(String typeName) {
 
-        Cursor cursor = db.query(TYPE_TABLE, new String[] {ROW_ID, TYPE_PATH, TYPE_COLOR, TYPE_COLOR_DARK}, TYPE_NAME + "=" + "'" + typeName + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(TYPE_TABLE, new String[]{ROW_ID, TYPE_PATH, TYPE_COLOR, TYPE_COLOR_DARK}, TYPE_NAME + "=" + "'" + typeName + "'", null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -378,7 +366,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public Cursor getTypeData(String typeKind) {
 
-        Cursor cursor = db.query(TYPE_TABLE, new String[] {TYPE_KIND, TYPE_NAME, TYPE_PATH, TYPE_COLOR, TYPE_COLOR_DARK}, TYPE_KIND + "=" + "'" + typeKind + "'", null, null, null, null);
+        Cursor cursor = getWritableDatabase().query(TYPE_TABLE, new String[]{TYPE_KIND, TYPE_NAME, TYPE_PATH, TYPE_COLOR, TYPE_COLOR_DARK}, TYPE_KIND + "=" + "'" + typeKind + "'", null, null, null, null);
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -398,7 +386,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(IMAGE, image);
         contentValues.put(DATE, date);
 
-        return db.update(tableName, contentValues, ROW_ID + "=" + rowId, null);
+        return getWritableDatabase().update(tableName, contentValues, ROW_ID + "=" + rowId, null);
     }
 
     public void updateMoneyData(String tableName, int rowId, String typeName, String moneyType, Integer money, String content, String date) {
@@ -409,19 +397,19 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(MONEY, money);
         contentValues.put(CONTENT, content);
 
-        db.update(tableName, contentValues, ROW_ID + "=" + rowId, null);
+        getWritableDatabase().update(tableName, contentValues, ROW_ID + "=" + rowId, null);
     }
 
     public void deleteMoneyData(String tableName, int rowId) {
-        db.delete(tableName, ROW_ID + "=" + rowId, null);
+        getWritableDatabase().delete(tableName, ROW_ID + "=" + rowId, null);
     }
 
     public void deleteTable(String tableName) {
-        db.execSQL("DROP TABLE IF EXISTS " + tableName);
+        getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + tableName);
     }
 
     public void deleteAccount(int rowId) {
-        db.delete(ACCOUNT_TABLE, ROW_ID + "=" + rowId, null);
+        getWritableDatabase().delete(ACCOUNT_TABLE, ROW_ID + "=" + rowId, null);
     }
 
     public void onCreateMoneyTable(String tableName) {
@@ -435,8 +423,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 + IMAGE + " BLOD, "
                 + DATE + " TEXT);";
 
-        db.execSQL(createDefaultTable);
+        getWritableDatabase().execSQL(createDefaultTable);
     }
-
-    public static boolean isLock = false;
 }
