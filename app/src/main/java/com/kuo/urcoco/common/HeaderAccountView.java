@@ -8,11 +8,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kuo.urcoco.R;
+import com.kuo.urcoco.common.item.AccountItem;
 
 /**
  * Created by User on 2015/11/22.
  */
 public class HeaderAccountView extends LinearLayout {
+
+    private AccountItem mAccountItem;
+
     public HeaderAccountView(Context context) {
         super(context);
 
@@ -32,25 +36,25 @@ public class HeaderAccountView extends LinearLayout {
 
     }
 
-    public void setAccountText(String text) {
-
-        TextView textView = (TextView) findViewById(R.id.nav_account_text);
-        textView.setText(text);
-
+    public String getAccountName() {
+        return mAccountItem.getAccountName();
     }
 
-    public String getAccountText() {
+
+    public void setAccount(AccountItem accountItem) {
+
+        mAccountItem = accountItem;
 
         TextView textView = (TextView) findViewById(R.id.nav_account_text);
-
-        return textView.getText().toString();
-    }
-
-    public void setCircleTextView(String text, int color) {
+        textView.setText(accountItem.getAccountName());
 
         CircleTextView circleTextView = (CircleTextView) findViewById(R.id.nav_account_image);
-        circleTextView.setText(text);
+        circleTextView.setText(String.valueOf(accountItem.getAccountName().charAt(0)));
         circleTextView.setTextColor(Color.parseColor("#FFFFFF"));
-        circleTextView.setCircleColor(color);
+        circleTextView.setCircleColor(accountItem.getColor());
+    }
+
+    public AccountItem getAccountItem() {
+        return mAccountItem;
     }
 }

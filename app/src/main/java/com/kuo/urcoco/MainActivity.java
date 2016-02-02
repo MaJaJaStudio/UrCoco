@@ -385,7 +385,7 @@ public class MainActivity extends AppCompatActivity
 
                 spinnerAdapter.setCurItemId(position);
 
-            } else if(position == 3) {
+            } else {
                 Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
 
                 if(!resume) {
@@ -402,9 +402,9 @@ public class MainActivity extends AppCompatActivity
 
                             rangeDate = date_1 + "~" + date_2;
 
-                            if(mFragmentMode == MAIN_FRAGMENT) {
+                            if (mFragmentMode == MAIN_FRAGMENT) {
                                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                                if(getSupportFragmentManager().findFragmentByTag("moneyFragment") == null) {
+                                if (getSupportFragmentManager().findFragmentByTag("moneyFragment") == null) {
                                     MoneyFragment moneyFragment = MoneyFragment.newIntance(date_1, date_2);
                                     fragmentTransaction.replace(R.id.frameLayout, moneyFragment, "moneyFragment");
                                     fragmentTransaction.commit();
@@ -412,7 +412,7 @@ public class MainActivity extends AppCompatActivity
                                 } else {
                                     ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).updateRangeDate(date_1, date_2);
                                 }
-                            } else if(mFragmentMode == CHART_FRAGMENT) {
+                            } else if (mFragmentMode == CHART_FRAGMENT) {
                                 ChartFragment chartFragment = (ChartFragment) getSupportFragmentManager().findFragmentByTag("chartFragment");
                                 ChartChildFragment chartChildFragment_1 = chartFragment.getViewPagerFragmentItem(0);
                                 ChartChildFragment chartChildFragment_2 = chartFragment.getViewPagerFragmentItem(1);
@@ -424,21 +424,14 @@ public class MainActivity extends AppCompatActivity
                                 chartChildFragment_2.update();
                             }
 
-                            spinnerAdapter.setCurItemId(position);
-
-                            Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
-                            spinner_nav.setLayoutParams(new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
-
+                            //Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
+                            parent.setLayoutParams(new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
                             ((TextView) parent.getChildAt(0)).setText(rangeDate);
 
                             resetSpinnerItemPosition();
+                            spinnerAdapter.setCurItemId(position);
                         }
 
-                    });
-                    dateRangePickerDialog.setOnCancelClickListener(new DateRangePickerDialog.OnCancelClickListener() {
-                        @Override
-                        public void onClick() {
-                        }
                     });
                     dateRangePickerDialog.show(getSupportFragmentManager(), "dialog");
                 } else {
@@ -447,12 +440,13 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 try {
-                    Field field = AdapterView.class.getDeclaredField("mOldSelectedPosition"); //mOldSelectedPosition
+                    Field field = AdapterView.class.getDeclaredField("mOldSelectedPosition");
                     field.setAccessible(true);
                     field.setInt(spinner_nav, AdapterView.INVALID_POSITION);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
 
             if(!date_1.equals("") && !date_2.equals("")) {
@@ -518,7 +512,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setHeaderView() {
+    private void setAccountHeaderView() {
 
         headerTextView.setText(CurrentAccountData.getAccountName());
 
@@ -563,8 +557,7 @@ public class MainActivity extends AppCompatActivity
         for(int i = 0 ; i < accountItems.size() ; i++) {
             if(!CurrentAccountData.getAccountName().equals(accountItems.get(i).getAccountName())) {
                 HeaderAccountView headerAccountView = new HeaderAccountView(this);
-                headerAccountView.setAccountText(accountItems.get(i).getAccountName());
-                headerAccountView.setCircleTextView(String.valueOf(accountItems.get(i).getAccountName().charAt(0)), accountItems.get(i).getColor());
+                headerAccountView.setAccount(accountItems.get(i));
                 headerAccountView.setOnClickListener(onChangeAccounListener);
                 headerAccountViews.add(headerAccountView);
                 heardLayout.addView(headerAccountView);
@@ -582,19 +575,19 @@ public class MainActivity extends AppCompatActivity
             HeaderAccountView headerAccountView = (HeaderAccountView) v;
 
             for(int i = 0 ; i < accountItems.size() ; i++) {
-                if(accountItems.get(i).getAccountName().equals(headerAccountView.getAccountText())) {
+                if(accountItems.get(i).getAccountName().equals(headerAccountView.getAccountName())) {
 
                     onAddAccountHeard(CurrentAccountData.getAccountItem());
 
                     CurrentAccountData.setAccountItem(accountItems.get(i));
-                    onDeleteAccountHeardWhereName(CurrentAccountData.getAccountName());
+                    onDeleteAccountHeardWhereAccountName(CurrentAccountData.getAccountName());
 
                     SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("account", CurrentAccountData.getAccountName());
                     editor.apply();
 
-                    setHeaderView();
+                    setAccountHeaderView();
                 }
             }
 
@@ -679,21 +672,20 @@ public class MainActivity extends AppCompatActivity
     public void onAddAccountHeard(AccountItem accountItem) {
 
         HeaderAccountView headerAccountView = new HeaderAccountView(this);
-        headerAccountView.setAccountText(accountItem.getAccountName());
-        headerAccountView.setCircleTextView(String.valueOf(accountItem.getAccountName().charAt(0)), ContextCompat.getColor(this, R.color.colorAccent));
+        headerAccountView.setAccount(accountItem);
         headerAccountView.setOnClickListener(onChangeAccounListener);
         headerAccountViews.add(headerAccountView);
         heardLayout.addView(headerAccountView);
 
     }
 
-    public void onDeleteAccountHeardWhereName(String name) {
+    public void onDeleteAccountHeardWhereAccountName(String accountName) {
 
         Iterator<HeaderAccountView> iterator = headerAccountViews.iterator();
 
         while (iterator.hasNext()) {
             HeaderAccountView headerAccountView = iterator.next();
-            if(headerAccountView.getAccountText().equals(name)) {
+            if(headerAccountView.getAccountName().equals(accountName)) {
                 heardLayout.removeView(headerAccountView);
                 iterator.remove();
             }
@@ -739,28 +731,10 @@ public class MainActivity extends AppCompatActivity
 
         } else if(!sharedPreferences.getString("account", "").equals("")) {
 
-            SQLiteManager sqLiteManager = new SQLiteManager(this);
-            sqLiteManager.onOpen(sqLiteManager.getWritableDatabase());
-
-            Cursor cursor = sqLiteManager.getAccountWhereAccountName(sharedPreferences.getString("account", ""));
-
-            AccountItem accountItem = new AccountItem();
-            accountItem.setRowId(cursor.getInt(0));
-            accountItem.setAccountName(cursor.getString(1));
-            accountItem.setMoneyTableName(cursor.getString(2));
-            accountItem.setColor(cursor.getInt(3));
-            accountItem.setBudget(cursor.getInt(4));
-            accountItem.setColorDark(cursor.getInt(6));
-
-            CurrentAccountData.setAccountItem(accountItem);
-
-            sqLiteManager.close();
-            cursor.close();
-
             this.accountItems = accountItems;
 
             initNavViews();
-            setHeaderView();
+            setAccountHeaderView();
             onFindAccountView();
 
         } else if(sharedPreferences.getString("account", "").equals("")) {
@@ -769,7 +743,7 @@ public class MainActivity extends AppCompatActivity
             CurrentAccountData.setAccountItem(accountItems.get(0));
 
             initNavViews();
-            setHeaderView();
+            setAccountHeaderView();
             onFindAccountView();
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
