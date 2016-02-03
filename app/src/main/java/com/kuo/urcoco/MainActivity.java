@@ -512,13 +512,13 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setAccountHeaderView() {
+    private void setAccountHeaderViewData(AccountItem accountItem) {
 
-        headerTextView.setText(CurrentAccountData.getAccountName());
+        headerTextView.setText(accountItem.getAccountName());
 
-        imageView.setText(String.valueOf(CurrentAccountData.getAccountName().charAt(0)));
+        imageView.setText(String.valueOf(accountItem.getAccountName().charAt(0)));
         imageView.setTextSize(25);
-        imageView.setCircleColor(CurrentAccountData.getAccountItem().getColor());
+        imageView.setCircleColor(accountItem.getColor());
 
     }
 
@@ -552,15 +552,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void onFindAccountView() {
+    private void addAccountHeaderViews() {
 
         for(int i = 0 ; i < accountItems.size() ; i++) {
             if(!CurrentAccountData.getAccountName().equals(accountItems.get(i).getAccountName())) {
-                HeaderAccountView headerAccountView = new HeaderAccountView(this);
-                headerAccountView.setAccount(accountItems.get(i));
-                headerAccountView.setOnClickListener(onChangeAccounListener);
-                headerAccountViews.add(headerAccountView);
-                heardLayout.addView(headerAccountView);
+                onAddAccountHeard(accountItems.get(i));
             }
         }
 
@@ -574,22 +570,17 @@ public class MainActivity extends AppCompatActivity
 
             HeaderAccountView headerAccountView = (HeaderAccountView) v;
 
-            for(int i = 0 ; i < accountItems.size() ; i++) {
-                if(accountItems.get(i).getAccountName().equals(headerAccountView.getAccountName())) {
+            onAddAccountHeard(CurrentAccountData.getAccountItem());
 
-                    onAddAccountHeard(CurrentAccountData.getAccountItem());
+            CurrentAccountData.setAccountItem(headerAccountView.getAccountItem());
+            onDeleteAccountHeadWhereAccountName(headerAccountView.getAccountItem().getAccountName());
 
-                    CurrentAccountData.setAccountItem(accountItems.get(i));
-                    onDeleteAccountHeardWhereAccountName(CurrentAccountData.getAccountName());
+            SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("account", headerAccountView.getAccountItem().getAccountName());
+            editor.apply();
 
-                    SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("account", CurrentAccountData.getAccountName());
-                    editor.apply();
-
-                    setAccountHeaderView();
-                }
-            }
+            setAccountHeaderViewData(headerAccountView.getAccountItem());
 
             onChangeNavMenu();
 
@@ -679,7 +670,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void onDeleteAccountHeardWhereAccountName(String accountName) {
+    public void onDeleteAccountHeadWhereAccountName(String accountName) {
 
         Iterator<HeaderAccountView> iterator = headerAccountViews.iterator();
 
@@ -729,26 +720,19 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             finish();
 
-        } else if(!sharedPreferences.getString("account", "").equals("")) {
+        } else {
+            if(sharedPreferences.getString("account", "").equals("")) {
+                CurrentAccountData.setAccountItem(accountItems.get(0));
 
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("account", CurrentAccountData.getAccountName());
+                editor.apply();
+            }
             this.accountItems = accountItems;
 
             initNavViews();
-            setAccountHeaderView();
-            onFindAccountView();
-
-        } else if(sharedPreferences.getString("account", "").equals("")) {
-
-            this.accountItems = accountItems;
-            CurrentAccountData.setAccountItem(accountItems.get(0));
-
-            initNavViews();
-            setAccountHeaderView();
-            onFindAccountView();
-
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("account", CurrentAccountData.getAccountName());
-            editor.apply();
+            setAccountHeaderViewData(CurrentAccountData.getAccountItem());
+            addAccountHeaderViews();
         }
     }
 }
