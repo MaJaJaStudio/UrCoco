@@ -140,7 +140,6 @@ public class DetailChartActivity extends AppCompatActivity implements FoundDetai
 
     private void initLineChart() {
 
-
         barChart = (BarChart) findViewById(R.id.barChart);
 
         Legend l = barChart.getLegend();

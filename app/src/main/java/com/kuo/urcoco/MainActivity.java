@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
@@ -97,12 +96,13 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
-    }
 
-    private void mainHandler(SharedPreferences sharedPreferences, SQLiteManager sqLiteManager) {
         initToolbar();
         initSpinner();
         initFab();
+    }
+
+    private void mainHandler(SharedPreferences sharedPreferences, SQLiteManager sqLiteManager) {
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
@@ -275,20 +275,17 @@ public class MainActivity extends AppCompatActivity
 
     private void initToolbar() {
 
+        drawerArrowDrawable = new DrawerArrowDrawable(this);
+        drawerArrowDrawable.setColor(Color.parseColor("#FFFFFF"));
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         if(getSupportActionBar() != null) {
-            getSupportActionBar().setElevation(0);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(drawerArrowDrawable);
         }
-
-        drawerArrowDrawable = new DrawerArrowDrawable(this);
-        drawerArrowDrawable.setColor(Color.parseColor("#FFFFFF"));
-
-        getSupportActionBar().setHomeAsUpIndicator(drawerArrowDrawable);
-
     }
 
     private void initSpinner() {
@@ -317,6 +314,143 @@ public class MainActivity extends AppCompatActivity
                 insterChoiceDialog.show(getSupportFragmentManager(), "dialog");
             }
         });
+    }
+
+    private void initNavViews() {
+
+        navigationView.setCheckedItem(R.id.nav_cost);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        initHeardViewChilds(navigationView.getHeaderView(0));
+
+        nav_check = R.id.nav_cost;
+    }
+
+    private void initHeardViewChilds(View header) {
+
+        arrowImage = (ImageView) header.findViewById(R.id.arrowImage);
+        headerTextView = (TextView) header.findViewById(R.id.textView);
+        imageView = (CircleTextView) header.findViewById(R.id.imageView);
+        heardLayout = (LinearLayout) header.findViewById(R.id.heardLayout);
+
+        LinearLayout accountLayout = (LinearLayout) header.findViewById(R.id.accountLayout);
+        accountLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOpenAccountChildViews();
+            }
+        });
+    }
+
+    private void setAccountHeaderViewData(AccountItem accountItem) {
+
+        headerTextView.setText(accountItem.getAccountName());
+
+        imageView.setText(String.valueOf(accountItem.getAccountName().charAt(0)));
+        imageView.setTextSize(25);
+        imageView.setCircleColor(accountItem.getColor());
+
+    }
+
+    private void onOpenAccountChildViews() {
+
+        ViewPropertyAnimatorCompat viewPropertyAnimatorCompat = ViewCompat.animate(arrowImage);
+
+        if(navAccountGroup) {
+
+            viewPropertyAnimatorCompat.rotation(0);
+
+            navigationView.getMenu().setGroupVisible(R.id.groupNormal, true);
+            navigationView.getMenu().setGroupVisible(R.id.groupAccount, false);
+
+            heardLayout.setVisibility(View.GONE);
+
+            navAccountGroup = false;
+
+        } else {
+
+            viewPropertyAnimatorCompat.rotation(180);
+
+            navigationView.getMenu().setGroupVisible(R.id.groupNormal, false);
+            navigationView.getMenu().setGroupVisible(R.id.groupAccount, true);
+
+            heardLayout.setVisibility(View.VISIBLE);
+
+            navAccountGroup = true;
+
+        }
+
+    }
+
+    private void addAccountHeaderViews() {
+
+        for(int i = 0 ; i < accountItems.size() ; i++) {
+            if(!CurrentAccountData.getAccountName().equals(accountItems.get(i).getAccountName())) {
+                addAccountHeaderChildView(accountItems.get(i));
+            }
+        }
+
+        heardLayout.setVisibility(View.GONE);
+
+    }
+
+    private void addAccountHeaderChildView(AccountItem accountItem) {
+
+        HeaderAccountView headerAccountView = new HeaderAccountView(this);
+        headerAccountView.setAccount(accountItem);
+        headerAccountView.setOnClickListener(onChangeAccounListener);
+        headerAccountViews.add(headerAccountView);
+        heardLayout.addView(headerAccountView);
+
+    }
+
+    private LinearLayout.OnClickListener onChangeAccounListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            AccountItem nowAccountItem = ((HeaderAccountView) v).getAccountItem();
+            AccountItem oldAccountItem = CurrentAccountData.getAccountItem();
+
+            SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("account", nowAccountItem.getAccountName());
+            editor.apply();
+
+            setAccountHeaderViewData(nowAccountItem);
+            addAccountHeaderChildView(oldAccountItem);
+            deleteAccountHeadWhereAccountName(nowAccountItem.getAccountName());
+
+            CurrentAccountData.setAccountItem(nowAccountItem);
+
+            onOpenAccountChildViews();
+
+            String[] dates = getDateRange(0);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+            MoneyFragment moneyFragment = MoneyFragment.newIntance(dates[0], dates[1]);
+            fragmentTransaction.replace(R.id.frameLayout, moneyFragment, "moneyFragment");
+            fragmentTransaction.commit();
+
+            Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
+            ((TextView) spinner_nav.getChildAt(0)).setText("今天");
+            spinnerAdapter.setCurItemId(0);
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
+    };
+
+    private void deleteAccountHeadWhereAccountName(String accountName) {
+
+        Iterator<HeaderAccountView> iterator = headerAccountViews.iterator();
+
+        while (iterator.hasNext()) {
+            HeaderAccountView headerAccountView = iterator.next();
+            if(headerAccountView.getAccountName().equals(accountName)) {
+                heardLayout.removeView(headerAccountView);
+                iterator.remove();
+            }
+        }
     }
 
     private String[] getDateRange(int index) {
@@ -367,6 +501,74 @@ public class MainActivity extends AppCompatActivity
         dates[1] = date_2;
 
         return dates;
+    }
+
+    /**
+     * Public Method
+     * */
+
+    private ActionMode mActionMode;
+
+    public void onOpenDeleteActionMode() {
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mActionMode = mode;
+                mode.getMenuInflater().inflate(R.menu.delete_menu, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                mode.setTitle("刪除");
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                int id = item.getItemId();
+
+                switch (id) {
+                    case R.id.meun_delete:
+
+                        if (getSupportFragmentManager().findFragmentByTag("moneyFragment") != null) {
+                            ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).deleteMoney();
+                        }
+
+                        break;
+                }
+
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                if (getSupportFragmentManager().findFragmentByTag("moneyFragment") != null) {
+                    ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).closeDeleteMode();
+                }
+            }
+        });
+    }
+
+    public void onCloseDeleteActionMode() {
+        mActionMode.finish();
+    }
+
+    public void resetSpinnerItemPosition() {
+        Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
+
+        if(spinner_nav.getSelectedItemPosition() == 3) {
+            resume = true;
+            try {
+                Field field = AdapterView.class.getDeclaredField("mSelectedPosition"); //mOldSelectedPosition
+                field.setAccessible(true);
+                field.setInt(spinner_nav, AdapterView.INVALID_POSITION);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Spinner.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
@@ -484,219 +686,6 @@ public class MainActivity extends AppCompatActivity
 
         }
     };
-
-    private void initNavViews() {
-
-        navigationView.setCheckedItem(R.id.nav_cost);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        initHeardViewChilds(navigationView.getHeaderView(0));
-
-        nav_check = R.id.nav_cost;
-
-    }
-
-    private void initHeardViewChilds(View header) {
-
-        arrowImage = (ImageView) header.findViewById(R.id.arrowImage);
-        headerTextView = (TextView) header.findViewById(R.id.textView);
-        imageView = (CircleTextView) header.findViewById(R.id.imageView);
-        heardLayout = (LinearLayout) header.findViewById(R.id.heardLayout);
-
-        LinearLayout accountLayout = (LinearLayout) header.findViewById(R.id.accountLayout);
-        accountLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onChangeNavMenu();
-            }
-        });
-    }
-
-    private void setAccountHeaderViewData(AccountItem accountItem) {
-
-        headerTextView.setText(accountItem.getAccountName());
-
-        imageView.setText(String.valueOf(accountItem.getAccountName().charAt(0)));
-        imageView.setTextSize(25);
-        imageView.setCircleColor(accountItem.getColor());
-
-    }
-
-    private void onChangeNavMenu() {
-
-        ViewPropertyAnimatorCompat viewPropertyAnimatorCompat = ViewCompat.animate(arrowImage);
-
-        if(navAccountGroup) {
-
-            viewPropertyAnimatorCompat.rotation(0);
-
-            navigationView.getMenu().setGroupVisible(R.id.groupNormal, true);
-            navigationView.getMenu().setGroupVisible(R.id.groupAccount, false);
-
-            heardLayout.setVisibility(View.GONE);
-
-            navAccountGroup = false;
-
-        } else {
-
-            viewPropertyAnimatorCompat.rotation(180);
-
-            navigationView.getMenu().setGroupVisible(R.id.groupNormal, false);
-            navigationView.getMenu().setGroupVisible(R.id.groupAccount, true);
-
-            heardLayout.setVisibility(View.VISIBLE);
-
-            navAccountGroup = true;
-
-        }
-
-    }
-
-    private void addAccountHeaderViews() {
-
-        for(int i = 0 ; i < accountItems.size() ; i++) {
-            if(!CurrentAccountData.getAccountName().equals(accountItems.get(i).getAccountName())) {
-                onAddAccountHeard(accountItems.get(i));
-            }
-        }
-
-        heardLayout.setVisibility(View.GONE);
-
-    }
-
-    private LinearLayout.OnClickListener onChangeAccounListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            HeaderAccountView headerAccountView = (HeaderAccountView) v;
-
-            onAddAccountHeard(CurrentAccountData.getAccountItem());
-
-            CurrentAccountData.setAccountItem(headerAccountView.getAccountItem());
-            onDeleteAccountHeadWhereAccountName(headerAccountView.getAccountItem().getAccountName());
-
-            SharedPreferences sharedPreferences = getSharedPreferences(DATA, 0);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("account", headerAccountView.getAccountItem().getAccountName());
-            editor.apply();
-
-            setAccountHeaderViewData(headerAccountView.getAccountItem());
-
-            onChangeNavMenu();
-
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            Calendar calendar = Calendar.getInstance();
-
-            String formatStr = "%02d";
-            String month = String.format(formatStr, (calendar.get(Calendar.MONTH)+1));
-            String day = String.format(formatStr, calendar.get(Calendar.DAY_OF_MONTH));
-
-            String date_1 = calendar.get(Calendar.YEAR) + "-" + month + "-" + day;
-
-            MoneyFragment moneyFragment = MoneyFragment.newIntance(date_1, date_1);
-            fragmentTransaction.replace(R.id.frameLayout, moneyFragment, "moneyFragment");
-            fragmentTransaction.commit();
-
-            Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
-            ((TextView) spinner_nav.getChildAt(0)).setText("今天");
-
-            spinnerAdapter.setCurItemId(0);
-
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-        }
-    };
-
-    /**
-     * Public Method
-     * */
-
-    private ActionMode mActionMode;
-
-    public void onOpenDeleteActionMode() {
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.startActionMode(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mActionMode = mode;
-                mode.getMenuInflater().inflate(R.menu.delete_menu, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                mode.setTitle("刪除");
-                return true;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                int id = item.getItemId();
-
-                switch (id) {
-                    case R.id.meun_delete:
-
-                        if (getSupportFragmentManager().findFragmentByTag("moneyFragment") != null) {
-                            ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).deleteMoney();
-                        }
-
-                        break;
-                }
-
-                return true;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                if (getSupportFragmentManager().findFragmentByTag("moneyFragment") != null) {
-                    ((MoneyFragment) getSupportFragmentManager().findFragmentByTag("moneyFragment")).closeDeleteMode();
-                }
-            }
-        });
-    }
-
-    public void onCloseDeleteActionMode() {
-        mActionMode.finish();
-    }
-
-    public void onAddAccountHeard(AccountItem accountItem) {
-
-        HeaderAccountView headerAccountView = new HeaderAccountView(this);
-        headerAccountView.setAccount(accountItem);
-        headerAccountView.setOnClickListener(onChangeAccounListener);
-        headerAccountViews.add(headerAccountView);
-        heardLayout.addView(headerAccountView);
-
-    }
-
-    public void onDeleteAccountHeadWhereAccountName(String accountName) {
-
-        Iterator<HeaderAccountView> iterator = headerAccountViews.iterator();
-
-        while (iterator.hasNext()) {
-            HeaderAccountView headerAccountView = iterator.next();
-            if(headerAccountView.getAccountName().equals(accountName)) {
-                heardLayout.removeView(headerAccountView);
-                iterator.remove();
-            }
-        }
-    }
-
-    public void resetSpinnerItemPosition() {
-        Spinner spinner_nav = (Spinner) findViewById(R.id.spinner_nav);
-
-        if(spinner_nav.getSelectedItemPosition() == 3) {
-            resume = true;
-            try {
-                Field field = AdapterView.class.getDeclaredField("mSelectedPosition"); //mOldSelectedPosition
-                field.setAccessible(true);
-                field.setInt(spinner_nav, AdapterView.INVALID_POSITION);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * Main MVP Presenter

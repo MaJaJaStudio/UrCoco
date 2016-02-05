@@ -127,7 +127,6 @@ public class MoneyDetailActivity extends AppCompatActivity {
         TextView contentText = (TextView) findViewById(R.id.contentText);
         contentText.setText(mMoneyItem.getContentText());
 
-
         if(mMoneyItem.getImage() != null) {
             ImageView imageView = (ImageView) findViewById(R.id.photo);
             byte[] in = mMoneyItem.getImage();
